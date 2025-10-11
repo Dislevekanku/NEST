@@ -238,6 +238,8 @@ echo "[6/6] Deploying agent (this process may take a few minutes)..."
 scp -i "$SSH_KEY_LABEL" -o StrictHostKeyChecking=no "user_data_${AGENT_ID}.sh" "root@$PUBLIC_IP:/tmp/"
 ssh -i "$SSH_KEY_LABEL" -o StrictHostKeyChecking=no "root@$PUBLIC_IP" "chmod +x /tmp/user_data_${AGENT_ID}.sh && /tmp/user_data_${AGENT_ID}.sh"
 
+# Cleanup
+rm "user_data_${AGENT_ID}.sh"
 
 echo ""
 echo "🎉 NANDA Agent Deployment Complete!"

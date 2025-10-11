@@ -67,6 +67,8 @@ Pipfile.lock
 *.pem
 *.crt
 *.key
+*.pub
+*-key
 
 # Testing
 .pytest_cache/
