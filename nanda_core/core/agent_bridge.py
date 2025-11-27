@@ -239,10 +239,11 @@ class SimpleAgentBridge(A2AServer):
             
             logger.info(f"🔧 [{self.agent_id}] MCP Request: registry={registry_part}, server={server_name}, query={query[:50]}...")
             
-            if not self.mcp_registry_url:
+            # Only check for mcp_registry_url if using NANDA registry (Smithery has its own registry)
+            if registry_part.lower() == "nanda" and not self.mcp_registry_url:
                 return self._create_response(
                     msg, conversation_id,
-                    "❌ MCP registry URL not configured"
+                    "❌ NANDA MCP registry URL not configured. Please set MCP_REGISTRY_URL environment variable."
                 )
             
             logger.info(f"🔧 [{self.agent_id}] Creating MCPRegistry with MCP URL: {self.mcp_registry_url}")

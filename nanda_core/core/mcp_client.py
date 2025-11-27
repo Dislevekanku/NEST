@@ -97,7 +97,7 @@ class MCPClient:
             logger.info(f"🎯 [MCPClient] Sending query to Claude with {len(available_tools)} tools")
 
             message = self.anthropic.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model="claude-3-haiku-20240307",
                 max_tokens=1024,
                 messages=messages,
                 tools=available_tools
@@ -143,7 +143,7 @@ class MCPClient:
                     break
 
                 message = self.anthropic.messages.create(
-                    model="claude-3-5-sonnet-20241022",
+                    model="claude-3-haiku-20240307",
                     max_tokens=1024,
                     messages=messages,
                     tools=available_tools

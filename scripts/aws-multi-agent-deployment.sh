@@ -15,10 +15,11 @@ REGISTRY_URL="${4:-http://registry.chat39.com:6900}"
 MCP_REGISTRY_URL="${5:-}"
 REGION="${6:-us-east-1}"
 INSTANCE_TYPE="${7:-t3.large}"  # Upgraded for 10 agents
+GROUP_ID="${8:-default}"  # Optional group identifier for key naming
 
 # Validation
 if [ -z "$ANTHROPIC_API_KEY" ] || [ -z "$AGENT_CONFIG_JSON" ]; then
-    echo "❌ Usage: $0 <ANTHROPIC_API_KEY> <AGENT_CONFIG_JSON> [SMITHERY_API_KEY] [REGISTRY_URL] [MCP_REGISTRY_URL] [REGION] [INSTANCE_TYPE]"
+    echo "❌ Usage: $0 <ANTHROPIC_API_KEY> <AGENT_CONFIG_JSON> [SMITHERY_API_KEY] [REGISTRY_URL] [MCP_REGISTRY_URL] [REGION] [INSTANCE_TYPE] [GROUP_ID]"
     exit 1
 fi
 
@@ -62,9 +63,13 @@ fi
 
 # Configuration
 SECURITY_GROUP_NAME="nanda-single-multi-agents"
-KEY_NAME="nanda-single-multi-agent-key"
+KEY_NAME="nanda-multi-agent-key-${GROUP_ID}"
+KEY_DIR="deployment-keys"
 AMI_ID="ami-0866a3c8686eaeeba"
 DEPLOYMENT_ID=$(date +%Y%m%d-%H%M%S)
+
+# Create key directory if it doesn't exist
+mkdir -p "$KEY_DIR"
 
 # AWS setup (same as original but with improved error handling)
 echo "[1/6] Checking AWS credentials..."
@@ -122,13 +127,16 @@ done
 
 # Key pair setup (same as original)
 echo "[3/6] Setting up key pair..."
-if [ ! -f "${KEY_NAME}.pem" ]; then
+if [ ! -f "${KEY_DIR}/${KEY_NAME}.pem" ]; then
     aws ec2 create-key-pair \
         --key-name "$KEY_NAME" \
         --region "$REGION" \
         --query 'KeyMaterial' \
-        --output text > "${KEY_NAME}.pem"
-    chmod 600 "${KEY_NAME}.pem"
+        --output text > "${KEY_DIR}/${KEY_NAME}.pem"
+    chmod 600 "${KEY_DIR}/${KEY_NAME}.pem"
+    echo "✅ Created new key pair: ${KEY_DIR}/${KEY_NAME}.pem"
+else
+    echo "✅ Using existing key pair: ${KEY_DIR}/${KEY_NAME}.pem"
 fi
 
 # IMPROVED: Create user data script with proper supervisor configuration
@@ -304,7 +312,7 @@ echo "Getting actual agent IDs (with hex suffixes)..."
 ACTUAL_AGENT_IDS=""
 sleep 10
 for attempt in {1..3}; do
-    ACTUAL_AGENT_IDS=$(ssh -i "${KEY_NAME}.pem" -o StrictHostKeyChecking=no ubuntu@$PUBLIC_IP \
+    ACTUAL_AGENT_IDS=$(ssh -i "${KEY_DIR}/${KEY_NAME}.pem" -o StrictHostKeyChecking=no ubuntu@$PUBLIC_IP \
         "grep 'Generated agent_id:' /var/log/agent_*.out.log 2>/dev/null | cut -d':' -f3 | tr -d ' '" 2>/dev/null || echo "")
     if [ -n "$ACTUAL_AGENT_IDS" ]; then
         break
@@ -341,11 +349,11 @@ fi
 
 echo ""
 echo "📊 Monitor agents:"
-echo "ssh -i ${KEY_NAME}.pem ubuntu@$PUBLIC_IP 'sudo supervisorctl status'"
+echo "ssh -i ${KEY_DIR}/${KEY_NAME}.pem ubuntu@$PUBLIC_IP 'sudo supervisorctl status'"
 
 echo ""
 echo "🔄 Restart all agents:"
-echo "ssh -i ${KEY_NAME}.pem ubuntu@$PUBLIC_IP 'sudo supervisorctl restart all'"
+echo "ssh -i ${KEY_DIR}/${KEY_NAME}.pem ubuntu@$PUBLIC_IP 'sudo supervisorctl restart all'"
 
 echo ""
 echo "🛑 To terminate:"
