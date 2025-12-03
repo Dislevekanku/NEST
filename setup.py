@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup script for Streamlined NANDA Adapter
+Setup script for NEST - NANDA Sandbox and Testbed
 """
 
 from setuptools import setup, find_packages
@@ -17,7 +17,7 @@ def read_requirements():
         "mcp",
         "python-dotenv",
         "flask-cors",
-        "psutil"  # For system monitoring
+        "psutil"
     ]
     return requirements
 
@@ -46,6 +46,25 @@ setup(
     extras_require={
         "dev": ["pytest", "pytest-asyncio", "black", "flake8"],
         "monitoring": ["prometheus-client", "grafana-api"],
+        "langgraph": ["langgraph>=0.0.1", "langchain-anthropic", "langchain-core"],
+        "tunnel": ["pyngrok>=5.0.0"],
+        "anthropic": ["anthropic>=0.18.0"],
+        "openai": ["openai>=1.0.0"],
+        "gemini": ["google-generativeai>=0.3.0"],
+        "llm-all": [
+            "anthropic>=0.18.0",
+            "openai>=1.0.0", 
+            "google-generativeai>=0.3.0"
+        ],
+        "all": [
+            "langgraph>=0.0.1",
+            "langchain-anthropic",
+            "langchain-core",
+            "pyngrok>=5.0.0",
+            "anthropic>=0.18.0",
+            "openai>=1.0.0",
+            "google-generativeai>=0.3.0"
+        ]
     },
     entry_points={
         "console_scripts": [
@@ -66,7 +85,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
     ],
-    keywords="nanda ai agent framework streamlined discovery telemetry",
+    keywords="nanda ai agent framework agent-interface langgraph deployment coordination",
     include_package_data=True,
     zip_safe=False,
 )

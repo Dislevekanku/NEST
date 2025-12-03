@@ -8,9 +8,13 @@ Simple, clean adapter focused on A2A communication without complexity.
 
 import os
 import requests
-from typing import Optional, Callable
+from typing import Optional, Callable, Union
 from python_a2a import run_server
 from .agent_bridge import SimpleAgentBridge
+
+# Import AgentInterface and adapters
+from ..interface import AgentInterface
+from ..adapters import SimpleAdapter
 
 
 class NANDA:
@@ -18,7 +22,8 @@ class NANDA:
     
     def __init__(self, 
                  agent_id: str,
-                 agent_logic: Callable[[str, str], str],
+                 agent_logic: Optional[Callable[[str, str], str]] = None,
+                 agent: Optional[AgentInterface] = None,
                  port: int = 6000,
                  registry_url: Optional[str] = None,
                  mcp_registry_url: Optional[str] = None,
@@ -31,7 +36,8 @@ class NANDA:
         
         Args:
             agent_id: Unique agent identifier
-            agent_logic: Function that takes (message: str, conversation_id: str) -> response: str
+            agent_logic: [DEPRECATED] Function that takes (message: str, conversation_id: str) -> response: str
+            agent: AgentInterface implementation (new way - supports any framework)
             port: Port to run on
             registry_url: Optional registry URL for agent discovery
             mcp_registry_url: Optional MCP registry URL for MCP server discovery
@@ -41,7 +47,6 @@ class NANDA:
             smithery_api_key: Optional Smithery API key for MCP server authentication
         """
         self.agent_id = agent_id
-        self.agent_logic = agent_logic
         self.port = port
         self.registry_url = registry_url
         self.mcp_registry_url = mcp_registry_url
@@ -50,20 +55,47 @@ class NANDA:
         self.enable_telemetry = enable_telemetry
         self.smithery_api_key = smithery_api_key
         
+        # Handle both old (agent_logic) and new (agent) interfaces
+        if agent is not None and agent_logic is not None:
+            raise ValueError("Cannot specify both 'agent' and 'agent_logic'. Use 'agent' for new code.")
+        
+        if agent is not None:
+            # New way: user provided AgentInterface
+            self.agent = agent
+            print(f"🔧 Using AgentInterface: {type(agent).__name__}")
+        elif agent_logic is not None:
+            # Old way: wrap simple function with SimpleAdapter for backward compatibility
+            self.agent = SimpleAdapter(agent_logic)
+            print(f"🔧 Using SimpleAdapter (backward compatibility mode)")
+        else:
+            raise ValueError("Must specify either 'agent' (AgentInterface) or 'agent_logic' (function)")
+        
         # Initialize telemetry if enabled
         self.telemetry = None
+        self.log_server = None
         if enable_telemetry:
             try:
                 from ..telemetry.telemetry_system import TelemetrySystem
+                from ..telemetry.log_server import LogStreamServer
+                
                 self.telemetry = TelemetrySystem(agent_id)
+                
+                # Start log streaming server on port+1
+                self.log_server = LogStreamServer(
+                    telemetry_system=self.telemetry,
+                    port=port + 1
+                )
+                self.log_server.start()
+                
                 print(f"📊 Telemetry enabled for {agent_id}")
+                print(f"📡 Logs: http://localhost:{port + 1}/logs")
             except ImportError:
                 print(f"⚠️ Telemetry requested but module not available")
         
-        # Create the bridge with optional features
+        # Create the bridge with the agent
         self.bridge = SimpleAgentBridge(
             agent_id=agent_id,
-            agent_logic=agent_logic,
+            agent=self.agent,
             registry_url=registry_url,
             telemetry=self.telemetry,
             mcp_registry_url=mcp_registry_url,
