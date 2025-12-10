@@ -2,7 +2,7 @@
 
 # CONFIGURABLE AWS EC2 + NANDA Agent Deployment Script
 # This script creates an EC2 instance and deploys a fully configurable modular NANDA agent
-# Usage: bash aws-ec2-deploy-simple.sh <AGENT_ID> <ANTHROPIC_API_KEY> <AGENT_NAME> <DOMAIN> <SPECIALIZATION> <DESCRIPTION> <CAPABILITIES> [REGISTRY_URL] [PORT] [REGION] [INSTANCE_TYPE]
+# Usage: bash aws-ec2-deploy-simple.sh <AGENT_ID> <ANTHROPIC_API_KEY> <AGENT_NAME> <DOMAIN> <SPECIALIZATION> <DESCRIPTION> <CAPABILITIES> [REGISTRY_URL] [PORT] [REGION] [INSTANCE_TYPE] [DATA_PATH]
 
 set -e
 
@@ -14,17 +14,18 @@ DOMAIN="$4"
 SPECIALIZATION="$5"
 DESCRIPTION="$6"
 CAPABILITIES="$7"
-REGISTRY_URL="${8:-}"
+REGISTRY_URL="${8:-http://registry.chat39.com:6900}"
 PORT="${9:-6000}"
 REGION="${10:-us-east-1}"
-INSTANCE_TYPE="${11:-t3.micro}"
+INSTANCE_TYPE="${11:-t3.small}"
+DATA_PATH="${12:-}"    # Optional data path
 
 # Validate inputs
 if [ -z "$AGENT_ID" ] || [ -z "$ANTHROPIC_API_KEY" ] || [ -z "$AGENT_NAME" ] || [ -z "$DOMAIN" ] || [ -z "$SPECIALIZATION" ] || [ -z "$DESCRIPTION" ] || [ -z "$CAPABILITIES" ]; then
-    echo "❌ Usage: $0 <AGENT_ID> <ANTHROPIC_API_KEY> <AGENT_NAME> <DOMAIN> <SPECIALIZATION> <DESCRIPTION> <CAPABILITIES> [REGISTRY_URL] [PORT] [REGION] [INSTANCE_TYPE]"
+    echo "❌ Usage: $0 <AGENT_ID> <ANTHROPIC_API_KEY> <AGENT_NAME> <DOMAIN> <SPECIALIZATION> <DESCRIPTION> <CAPABILITIES> [REGISTRY_URL] [PORT] [REGION] [INSTANCE_TYPE] [DATA_PATH]"
     echo ""
     echo "Example:"
-    echo "  $0 data-scientist sk-ant-xxxxx \"Data Scientist\" \"data analysis\" \"analytical and precise AI assistant\" \"I specialize in data analysis, statistics, and machine learning.\" \"data analysis,statistics,machine learning,Python,R\" \"https://registry.example.com\" 6000 us-east-1 t3.micro"
+    echo "  $0 data-scientist sk-ant-xxxxx \"Data Scientist\" \"data analysis\" \"analytical and precise AI assistant\" \"I specialize in data analysis, statistics, and machine learning.\" \"data analysis,statistics,machine learning,Python,R\" \"https://registry.example.com\" 6000 us-east-1 t3.small \"/data/hr.csv\""
     echo ""
     echo "Parameters:"
     echo "  AGENT_ID: Unique identifier for the agent"
@@ -34,7 +35,11 @@ if [ -z "$AGENT_ID" ] || [ -z "$ANTHROPIC_API_KEY" ] || [ -z "$AGENT_NAME" ] || 
     echo "  SPECIALIZATION: Brief description of agent's role"
     echo "  DESCRIPTION: Detailed description of the agent"
     echo "  CAPABILITIES: Comma-separated list of capabilities"
-    echo "  REGISTRY_URL: Optional registry URL for agent discovery"
+    echo "  REGISTRY_URL: Optional registry URL for agent discovery (default: http://registry.chat39.com:6900)"
+    echo "  PORT: Optional port number (default: 6000)"
+    echo "  REGION: Optional AWS region (default: us-east-1)"
+    echo "  INSTANCE_TYPE: Optional EC2 instance type (default: t3.small)"
+    echo "  DATA_PATH: Optional data path to attach to agent (e.g., /data/hr.csv or /mnt/hr/)"
     exit 1
 fi
 
@@ -49,6 +54,7 @@ echo "Registry URL: ${REGISTRY_URL:-"None"}"
 echo "Port: $PORT"
 echo "Region: $REGION"
 echo "Instance Type: $INSTANCE_TYPE"
+echo "Data Path: ${DATA_PATH:-"None (no data attached)"}"
 echo ""
 
 # Configuration
@@ -160,6 +166,13 @@ if [ -z "\$PUBLIC_IP" ]; then
     exit 1
 fi
 
+# Log data path status
+if [ -n "$DATA_PATH" ]; then
+    echo "DATA_PATH is set to: $DATA_PATH"
+else
+    echo "No DATA_PATH provided; starting agent without attached data."
+fi
+
 # Start the agent with all configuration
 echo "Starting NANDA agent with PUBLIC_URL: http://\$PUBLIC_IP:$PORT"
 sudo -u ubuntu bash -c "
@@ -175,6 +188,7 @@ sudo -u ubuntu bash -c "
     export REGISTRY_URL='$REGISTRY_URL'
     export PUBLIC_URL='http://\$PUBLIC_IP:$PORT'
     export PORT='$PORT'
+    export DATA_PATH='$DATA_PATH'
     nohup python3 examples/nanda_agent.py > agent.log 2>&1 &
 "
 

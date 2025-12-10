@@ -17,7 +17,8 @@ def read_requirements():
         "mcp",
         "python-dotenv",
         "flask-cors",
-        "psutil"  # For system monitoring
+        "psutil",  # For system monitoring
+        "pandas"   # For CSV data loading
     ]
     return requirements
 

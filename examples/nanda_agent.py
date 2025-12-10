@@ -25,6 +25,14 @@ except ImportError:
     ANTHROPIC_AVAILABLE = False
     print("⚠️ Warning: anthropic library not available. Install with: pip install anthropic")
 
+# Try to import pandas for CSV support
+try:
+    import pandas as pd
+    PANDAS_AVAILABLE = True
+except ImportError:
+    PANDAS_AVAILABLE = False
+    print("⚠️ Warning: pandas library not available. CSV data loading will be disabled. Install with: pip install pandas")
+
 # =============================================================================
 # AGENT CONFIGURATION - Customize this section for different agents
 # =============================================================================
@@ -87,6 +95,54 @@ AGENT_CONFIG = get_agent_config()
 
 # Port configuration - use environment variable or default to 6000
 PORT = int(os.getenv("PORT", "6000"))
+
+# Data path from environment
+DATA_PATH = os.getenv("DATA_PATH", None)
+
+# =============================================================================
+# DATA LOADING - Load attached data if DATA_PATH is provided
+# =============================================================================
+
+def load_attached_data(path):
+    """
+    Load data from a file path. Supports CSV and JSON formats.
+    
+    Args:
+        path: File path to load data from
+        
+    Returns:
+        Loaded data (DataFrame for CSV, dict/list for JSON) or None if failed
+    """
+    if not path:
+        return None
+    
+    try:
+        if path.endswith(".csv"):
+            if not PANDAS_AVAILABLE:
+                print(f"❌ Cannot load CSV: pandas not available. Install with: pip install pandas")
+                return None
+            df = pd.read_csv(path)
+            print(f"✅ Loaded CSV data with shape: {df.shape}")
+            return df
+        elif path.endswith(".json"):
+            import json
+            with open(path, 'r') as f:
+                data = json.load(f)
+            print(f"✅ Loaded JSON data")
+            if isinstance(data, dict):
+                print(f"   Keys: {list(data.keys())}")
+            elif isinstance(data, list):
+                print(f"   Items: {len(data)}")
+            return data
+        else:
+            print(f"⚠️ Unsupported file format. Only .csv and .json are supported.")
+            return None
+    except FileNotFoundError:
+        print(f"❌ Failed to load data: File not found at {path}")
+        return None
+    except Exception as e:
+        print(f"❌ Failed to load data from {path}: {e}")
+        return None
 
 # =============================================================================
 # LLM-POWERED AGENT LOGIC - Uses Anthropic Claude for intelligent responses
@@ -185,6 +241,20 @@ def main():
     print(f"🛠️ Capabilities: {', '.join(AGENT_CONFIG['expertise'])}")
     if AGENT_CONFIG['registry_url']:
         print(f"🌐 Registry: {AGENT_CONFIG['registry_url']}")
+    
+    # Load attached data if DATA_PATH is provided
+    attached_data = None
+    if DATA_PATH:
+        print(f"📂 Loading data from: {DATA_PATH}")
+        attached_data = load_attached_data(DATA_PATH)
+        if attached_data is not None:
+            if PANDAS_AVAILABLE and isinstance(attached_data, pd.DataFrame):
+                print(f"📊 Loaded data with shape: {attached_data.shape}")
+            AGENT_CONFIG["data"] = attached_data
+        else:
+            print("⚠️ Data loading failed, continuing without attached data")
+    else:
+        print("ℹ️ No DATA_PATH provided; starting agent without attached data")
     
     # Check for Anthropic API key
     if not AGENT_CONFIG.get("anthropic_api_key"):
