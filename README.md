@@ -6,8 +6,10 @@ A production-ready framework for deploying and managing specialized AI agents wi
 
 ## Key Features
 
-- **Intelligent Agents**: Deploy specialized AI agents powered by Claude LLM
+- **Intelligent Agents**: Deploy specialized AI agents powered by multiple LLM providers (Anthropic Claude, OpenAI GPT, Google Gemini)
+- **Data-Backed Agents**: Attach CSV or JSON datasets to agents for intelligent data-driven responses
 - **A2A Communication**: Agents can find and communicate with each other using `@agent-id` syntax  
+- **MCP Integration**: Discover and use tools from MCP servers via Smithery and NANDA registries
 - **Cloud Deployment**: One-command deployment to AWS EC2 with automatic setup
 - **Index Integration**: Automatic registration with NANDA agent Index
 - **Scalable**: Deploy single agents or 10+ agents per instance
@@ -29,12 +31,13 @@ bash scripts/aws-single-agent-deployment.sh \
   "smithery-api-key" \            # Smithery API key (optional)
   "registry-url" \                # Agent registry URL (optional)
   "mcp-registry-url" \            # MCP registry URL (optional)
-  "port" \                        # Port number 
-  "region" \                      # AWS region 
-  "instance-type"                 # EC2 instance type 
+  "port" \                        # Port number (default: 6000)
+  "region" \                      # AWS region (default: us-east-1)
+  "instance-type" \               # EC2 instance type (default: t3.micro)
+  "data-path"                     # Data file path (optional, 14th parameter)
 ```
 
-**Example:**
+**Example (Basic Agent):**
 ```bash
 bash scripts/aws-single-agent-deployment.sh \
   "furniture-expert" \
@@ -50,6 +53,25 @@ bash scripts/aws-single-agent-deployment.sh \
   "6000" \
   "us-east-1" \
   "t3.micro"
+```
+
+**Example (Data-Backed Agent with HR Dataset):**
+```bash
+bash scripts/aws-single-agent-deployment.sh \
+  "hr-assistant" \
+  "sk-ant-api03-..." \
+  "HR Assistant" \
+  "human resources" \
+  "HR data specialist" \
+  "I help answer questions about employee data, salaries, and department information" \
+  "HR,employee data,payroll,benefits" \
+  "smithery-key-xxxxx" \
+  "http://registry.chat39.com:6900" \
+  "https://your-mcp-registry.ngrok-free.app" \
+  "6000" \
+  "us-east-1" \
+  "t3.micro" \
+  "data/hr.csv"    # 14th parameter: DATA_PATH for data-backed responses
 ```
 
 ### Deploy Multiple Agents (10 per instance)
@@ -73,19 +95,28 @@ NEST/
 │   ├── core/
 │   │   ├── adapter.py                  # Main NANDA adapter
 │   │   ├── agent_bridge.py             # A2A communication
-│   │   └── registry_client.py          # Registry integration
-│   ├── discovery/                      # Agent discovery system
+│   │   ├── mcp_client.py               # MCP client integration
+│   │   └── mcp_registry.py             # MCP registry management
+│   ├── llm/                            # LLM provider abstractions
+│   │   ├── anthropic.py                # Anthropic Claude
+│   │   ├── openai.py                   # OpenAI GPT
+│   │   └── gemini.py                   # Google Gemini
+│   ├── deployment/                     # Deployment utilities
 │   └── telemetry/                      # Monitoring & metrics
 ├── examples/
 │   ├── nanda_agent.py                  # Main agent implementation
-│   └── agent_configs.py                # Agent personalities
+│   │                                   # Supports data loading, tool generation
+│   ├── customer_support/               # Customer support agent example
+│   └── team_manager/                   # Team management agent example
 ├── scripts/
-│   ├── aws-single-agent-deployment.sh     # Single agent deployment
-│   ├── aws-multi-agent-deployment.sh      # Multi-agent deployment
-│   ├── deploy-agent.sh                    # Deploy to existing server
-│   └── agent_configs/                     # Agent configuration files
-│       ├── 100-agents-config.json            # 100 agent personalities
-│       └── group-*.json                      # Agent group configs
+│   ├── aws-single-agent-deployment.sh  # Single agent deployment
+│   ├── aws-multi-agent-deployment.sh   # Multi-agent deployment
+│   └── agent_configs/                  # Agent configuration files
+│       ├── 100-agents-config.json      # 100 agent personalities
+│       └── group-*.json                # Agent group configs
+├── data/                               # Sample datasets
+│   ├── hr.csv                          # Sample HR dataset
+│   └── README.md                       # Data directory docs
 └── README.md
 ```
 
@@ -169,9 +200,14 @@ Pre-configured agent groups for quick deployment:
 
 ## Prerequisites
 
+**For AWS Deployment:**
 - AWS CLI configured with credentials
-- Anthropic API key
-- Python 3.8+ (for local development)
+- AWS account with EC2 permissions
+
+**For Local Development:**
+- Python 3.8+
+- Anthropic API key (or OpenAI/Gemini key if using those providers)
+- Optional: pandas (for CSV support) - installed automatically via `pip install -e .`
 
 ## Monitoring
 
@@ -186,26 +222,42 @@ Each deployed agent includes:
 
 ### Environment Variables
 
-- `ANTHROPIC_API_KEY`: Your Claude API key
+**Required:**
+- `ANTHROPIC_API_KEY`: Your Anthropic Claude API key (or OpenAI/Gemini key depending on provider)
+
+**Agent Configuration:**
 - `AGENT_ID`: Unique agent identifier  
 - `AGENT_NAME`: Display name for the agent
-- `REGISTRY_URL`: NANDA registry endpoint
+- `AGENT_DOMAIN`: Primary field of expertise
+- `AGENT_SPECIALIZATION`: Role description
+- `AGENT_DESCRIPTION`: Detailed agent description
+- `AGENT_CAPABILITIES`: Comma-separated capabilities
+
+**Registry & Communication:**
+- `REGISTRY_URL`: NANDA agent registry endpoint
+- `MCP_REGISTRY_URL`: MCP registry URL for NANDA MCP servers
+- `SMITHERY_API_KEY`: Smithery API key for MCP server access
 - `PUBLIC_URL`: Agent's public URL for A2A communication
-- `PORT`: Port number for the agent server
+- `PORT`: Port number for the agent server (default: 6000)
+
+**Data & LLM:**
+- `DATA_PATH`: Path to attached dataset (CSV or JSON file, or S3 URL)
+- `LLM_PROVIDER`: LLM provider to use - `anthropic` (default), `openai`, or `gemini`
 
 ### Attached Data and `DATA_PATH`
 
-NEST supports attaching a local dataset to an agent via the `DATA_PATH` environment variable. The agent will load this file on startup and expose it through its configuration.
+NEST supports attaching datasets to agents via the `DATA_PATH` environment variable, enabling **data-backed agents** that can answer questions using real data from CSV or JSON files.
 
-- **Supported formats**: `.csv` (via pandas DataFrame) and `.json` (via Python `json`)
-- **Where it is used**: `examples/nanda_agent.py` reads `DATA_PATH`, loads the file, and assigns it to `AGENT_CONFIG["data"]`
+#### Features
 
-**Local development**
+- **Supported formats**: `.csv` (loaded as pandas DataFrame) and `.json` (loaded as Python dict/list)
+- **Automatic tool generation**: When data is attached, the agent automatically gets tools like `get_row_count`, `query_data`, and `get_data_summary`
+- **Intelligent tool use**: The agent intelligently uses these tools when questions require data analysis
+- **S3 support**: Can load data from S3 URLs (e.g., `s3://bucket/path/data.csv`)
 
-- **CSV example**:
-  - Create a data file under `data/`, for example `data/hr.csv` (see `DATA_SETUP_INSTRUCTIONS.md` for a ready-made HR dataset).
-  - Start the agent with `DATA_PATH` set:
+#### Local Development
 
+**CSV Example:**
 ```bash
 # Linux / Mac
 DATA_PATH=data/hr.csv python examples/nanda_agent.py
@@ -214,35 +266,65 @@ DATA_PATH=data/hr.csv python examples/nanda_agent.py
 $env:DATA_PATH="data/hr.csv"; python examples/nanda_agent.py
 ```
 
-When `DATA_PATH` is set, the agent will attempt to load the file and log whether loading succeeded; if loading fails or `DATA_PATH` is unset, the agent will continue without attached data.
+**JSON Example:**
+```bash
+DATA_PATH=data/products.json python examples/nanda_agent.py
+```
 
-**AWS deployment**
+The agent will:
+- Load the file on startup
+- Log the data shape/structure
+- Make data tools available for queries
+- Continue normally if loading fails (graceful degradation)
 
-The single-agent deployment script accepts an optional **12th parameter** that becomes the `DATA_PATH` environment variable on the EC2 instance (see `DATA_PATH_HOOK_CHANGES.md` for details):
+#### AWS Deployment
+
+The deployment script accepts `DATA_PATH` as the **14th parameter** (optional):
 
 ```bash
 bash scripts/aws-single-agent-deployment.sh \
-  "hr-agent" \
+  "hr-assistant" \
   "sk-ant-xxxxx" \
   "HR Assistant" \
   "human resources" \
-  "HR specialist" \
-  "I help with HR questions and employee data" \
-  "HR,employee data,payroll,benefits" \
+  "HR data specialist" \
+  "I help answer questions about employee data" \
+  "HR,employee data,payroll" \
+  "smithery-key-xxxxx" \
   "http://registry.chat39.com:6900" \
+  "https://mcp-registry.ngrok-free.app" \
   "6000" \
   "us-east-1" \
-  "t3.small" \
-  "data/hr.csv"    # 12th argument: DATA_PATH passed through to the agent
+  "t3.micro" \
+  "data/hr.csv"    # 14th parameter: DATA_PATH
 ```
 
-On the EC2 host the user-data script exports:
-
+**S3 Example:**
 ```bash
-export DATA_PATH='$DATA_PATH'
+# ... same parameters ...
+  "s3://my-bucket/hr-data.csv"    # Load from S3
 ```
 
-so the running agent sees the same path via `os.getenv("DATA_PATH")` and loads the attached dataset at startup.
+The script will:
+- Download S3 files automatically if path starts with `s3://`
+- Export `DATA_PATH` as environment variable on EC2
+- Agent loads data on startup and makes it available via tools
+
+#### How It Works
+
+1. **Data Loading**: Agent reads `DATA_PATH` from environment on startup
+2. **Tool Creation**: If data is loaded, agent automatically creates data query tools
+3. **Intelligent Responses**: When users ask data-related questions, agent uses tools to query the dataset
+4. **Transparent**: Agent explains results in natural language after tool execution
+
+#### Example Use Cases
+
+- **HR Agent**: Answer questions about employee data, salaries, departments
+- **Product Catalog Agent**: Query product information, prices, availability
+- **Knowledge Base Agent**: Search through structured knowledge data
+- **Analytics Agent**: Perform data analysis and generate insights
+
+See `DATA_SETUP_INSTRUCTIONS.md` for sample datasets and setup guides.
 
 ### Agent Personality Configuration
 
@@ -261,11 +343,29 @@ curl -X POST http://agent-ip:{PORT}/a2a \
   -d '{"content":{"text":"Hello! What can you help me with?","type":"text"},"role":"user","conversation_id":"test123"}'
 ```
 
+### Test Data-Backed Agent
+```bash
+# Ask a question that requires data
+curl -X POST http://agent-ip:{PORT}/a2a \
+  -H "Content-Type: application/json" \
+  -d '{"content":{"text":"How many employees are in the Engineering department?","type":"text"},"role":"user","conversation_id":"test123"}'
+```
+
+The agent will automatically use data tools to query the attached dataset and return accurate results.
+
 ### Test A2A Communication
 ```bash
 curl -X POST http://agent-a-ip:{PORT}/a2a \
   -H "Content-Type: application/json" \
   -d '{"content":{"text":"@agent-b-id Please help with this task","type":"text"},"role":"user","conversation_id":"test123"}'
+```
+
+### Test MCP Tool Access
+```bash
+# Query Smithery MCP server
+curl -X POST http://agent-ip:{PORT}/a2a \
+  -H "Content-Type: application/json" \
+  -d '{"content":{"text":"#smithery:@weather-server get current weather in NYC","type":"text"},"role":"user","conversation_id":"test123"}'
 ```
 
 ## Production Deployment
