@@ -50,8 +50,14 @@ def safe_print(*args, **kwargs):
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from nanda_core.core.adapter import NANDA
+from nanda_core.deployment.tunnel import TunnelDeployer
 
-# Try to import Anthropic - will fail gracefully if not available
+from dotenv import load_dotenv
+load_dotenv()
+
+
+tunnel_enabled = os.getenv("ENABLE_TUNNEL", "false").lower() == "true"
+
 try:
     from anthropic import Anthropic
     ANTHROPIC_AVAILABLE = True
@@ -68,6 +74,18 @@ except ImportError:
     A2A_AVAILABLE = False
     safe_print("⚠️ Warning: python_a2a library not available. A2A calls will not work.")
 
+
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
 
 # =============================================================================
 # AGENT CONFIGURATION - Customize this section for different agents
@@ -93,8 +111,35 @@ def get_agent_config():
     description = os.getenv("AGENT_DESCRIPTION", "I am a helpful AI assistant specializing in general tasks and Ubuntu system administration.")
     capabilities = os.getenv("AGENT_CAPABILITIES", "general assistance,Ubuntu system administration,Python development,cloud deployment,agent-to-agent communication")
     registry_url = os.getenv("REGISTRY_URL", None)
+    mcp_registry_url = os.getenv("MCP_REGISTRY_URL", None)
     public_url = os.getenv("PUBLIC_URL", None)
     
+    # LLM Configuration - NEW
+    llm_provider = os.getenv("LLM_PROVIDER", "anthropic")  # anthropic, openai, gemini
+
+    print("LLM_PROVIDER", llm_provider)
+
+    # Get API key based on provider
+    if os.getenv("LLM_API_KEY"):
+        llm_api_key = os.getenv("LLM_API_KEY")
+    elif llm_provider == "anthropic":
+        llm_api_key = os.getenv("ANTHROPIC_API_KEY")
+    elif llm_provider == "openai":
+        llm_api_key = os.getenv("OPENAI_API_KEY")
+    elif llm_provider == "gemini":
+        llm_api_key = os.getenv("GOOGLE_API_KEY")
+    else:
+        llm_api_key = None
+    
+    print("api key", llm_api_key)
+    # Default models per provider
+    default_models = {
+        "anthropic": "claude-3-haiku-20240307",
+        "openai": "gpt-4",
+        "gemini": "gemini-2.5-flash-lite"
+    }
+    llm_model = os.getenv("LLM_MODEL", default_models.get(llm_provider, "claude-3-haiku-20240307"))
+
     # Parse capabilities into a list
     expertise_list = [cap.strip() for cap in capabilities.split(",")]
     
@@ -120,10 +165,15 @@ When someone asks about yourself, mention that you're part of the NANDA agent ne
         "description": description,
         "expertise": expertise_list,
         "registry_url": registry_url,
+        "mcp_registry_url": mcp_registry_url,
         "public_url": public_url,
         "system_prompt": system_prompt,
         "anthropic_api_key": os.getenv("ANTHROPIC_API_KEY"),
-        "model": "claude-3-haiku-20240307"  # Fast and cost-effective model
+        "llm_provider": llm_provider,      # NEW
+        "llm_api_key": llm_api_key,        # NEW
+        "llm_model": llm_model,            # NEW
+        "model": llm_model,
+        "tunnel_enabled": tunnel_enabled
     }
 
 # Load configuration
@@ -440,18 +490,35 @@ def create_llm_agent_logic(config: Dict[str, Any]):
     Uses Anthropic Claude for intelligent, context-aware responses.
     """
     
-    # Initialize Anthropic client
-    anthropic_client = None
-    if ANTHROPIC_AVAILABLE and config.get("anthropic_api_key"):
-        try:
-            anthropic_client = Anthropic(api_key=config["anthropic_api_key"])
-            safe_print(f"✅ Anthropic Claude initialized for {config['agent_name']}")
-        except Exception as e:
-            print(f"❌ Failed to initialize Anthropic: {e}")
-            anthropic_client = None
-    
-    # Prepare system prompt (already formatted in get_agent_config)
+    # Initialize appropriate LLM client
+    llm_client = None
+    provider = config.get("llm_provider", "anthropic")
     system_prompt = config["system_prompt"]
+
+    # Initialize appropriate LLM client
+    print(f"GEMINI_AVAILABLE: {GEMINI_AVAILABLE}")
+
+    if provider == "anthropic" and ANTHROPIC_AVAILABLE and config.get("llm_api_key"):
+        try:
+            llm_client = Anthropic(api_key=config["llm_api_key"])
+            print(f"✅ Anthropic Claude initialized")
+        except Exception as e:
+            print(f"❌ Anthropic init failed: {e}")
+    
+    elif provider == "openai" and OPENAI_AVAILABLE and config.get("llm_api_key"):
+        try:
+            llm_client = OpenAI(api_key=config["llm_api_key"])
+            print(f"✅ OpenAI GPT initialized")
+        except Exception as e:
+            print(f"❌ OpenAI init failed: {e}")
+    
+    elif provider == "gemini" and GEMINI_AVAILABLE and config.get("llm_api_key"):
+        try:
+            genai.configure(api_key=config["llm_api_key"])
+            llm_client = genai.GenerativeModel(config["llm_model"])
+            print(f"✅ Google Gemini initialized")
+        except Exception as e:
+            print(f"❌ Gemini init failed: {e}")
     
     # Get data tools if data is available
     agent_data = config.get("data")
@@ -564,127 +631,98 @@ Please provide a helpful, concise summary of the menu information for the user. 
                     safe_print(f"❌ Error during A2A flow: {e}")
                     return f"I tried to contact the Menu Agent but hit an error: {e}"
         
-        # If LLM is available, use it for intelligent responses
-        if anthropic_client:
+        if llm_client:
             try:
-                # Add current time context if time-related query
                 context_info = ""
                 if any(time_word in message.lower() for time_word in ['time', 'date', 'when']):
                     context_info = f"\n\nCurrent time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
                 
-                messages = [
-                        {
-                            "role": "user", 
-                            "content": message
-                        }
-                    ]
+                full_prompt = system_prompt + context_info
                 
-                # Make initial API call with tools if available
-                # Force tool use for data-related questions via system prompt
-                data_keywords = ['employee', 'salary', 'department', 'hr dataset', 'how many', 'employees', 'workforce',
-                                'menu', 'item', 'price', 'cheapest', 'expensive', 'cost', 'dish', 'food', 'restaurant']
-                is_data_question = any(keyword in message.lower() for keyword in data_keywords)
-                
-                # Don't use tool_choice - rely on strong system prompt to force tool use
-                # Anthropic API doesn't support "any" or "required" - only "auto", "none", or specific tool dict
-                
-                # Build API call parameters
-                api_params = {
-                    "model": config["model"],
-                    "max_tokens": 1000,
-                    "system": system_prompt + context_info,
-                    "messages": messages
-                }
-                
-                # Only add tools and tool_choice if tools are available
-                if data_tools:
-                    api_params["tools"] = data_tools
-                    # Don't set tool_choice - let the model decide based on system prompt
-                
-                response = anthropic_client.messages.create(**api_params)
-                
-                # Handle tool use if present
-                max_iterations = 5  # Prevent infinite loops
-                iteration = 0
-                
-                while iteration < max_iterations and getattr(response, 'stop_reason', None) == "tool_use":
-                    iteration += 1
-                    
-                    # Check if response contains tool use
-                    tool_use_blocks = []
-                    for block in response.content:
-                        block_type = getattr(block, 'type', None) if hasattr(block, 'type') else None
-                        if block_type == "tool_use":
-                            tool_use_blocks.append(block)
-                    
-                    if not tool_use_blocks:
-                        break
-                    
-                    # Add assistant message with tool use
-                    messages.append({
-                        "role": "assistant",
-                        "content": response.content
-                    })
-                    
-                    # Execute tools and add results
-                    tool_results = []
-                    for tool_block in tool_use_blocks:
-                        tool_name = getattr(tool_block, 'name', '')
-                        tool_input = getattr(tool_block, 'input', {})
-                        tool_id = getattr(tool_block, 'id', f"tool_{iteration}")
-                        
-                        # Step 6.4: Log tool call request
-                        safe_print(f"📞 Tool call request: {tool_name} with input: {tool_input}")
-                        
-                        tool_result = execute_data_tool(tool_name, tool_input, agent_data)
-                        
-                        # Step 6.4: Log tool result
-                        safe_print(f"✅ Tool result returned: {str(tool_result)[:100]}...")
-                        
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": tool_id,
-                            "content": str(tool_result)
-                        })
-                    
-                    messages.append({
-                        "role": "user",
-                        "content": tool_results
-                    })
-                    
-                    # Continue conversation with tool results
-                    # Build API call parameters for follow-up
-                    followup_params = {
-                        "model": config["model"],
-                        "max_tokens": 1000,
-                        "system": system_prompt + context_info,
-                        "messages": messages
-                    }
-                    
+                # Call appropriate LLM with tool support for Anthropic when data tools are available
+                if provider == "anthropic":
+                    # Use tools if available (for data-backed agents)
                     if data_tools:
-                        followup_params["tools"] = data_tools
+                        messages = [{"role": "user", "content": message}]
+                        api_params = {
+                            "model": config["llm_model"],
+                            "max_tokens": 1000,
+                            "system": full_prompt,
+                            "messages": messages,
+                            "tools": data_tools
+                        }
+                        response = llm_client.messages.create(**api_params)
+                        
+                        # Handle tool use if present
+                        max_iterations = 5
+                        iteration = 0
+                        while iteration < max_iterations and getattr(response, 'stop_reason', None) == "tool_use":
+                            iteration += 1
+                            tool_use_blocks = [block for block in response.content if getattr(block, 'type', None) == "tool_use"]
+                            if not tool_use_blocks:
+                                break
+                            
+                            messages.append({"role": "assistant", "content": response.content})
+                            tool_results = []
+                            for tool_block in tool_use_blocks:
+                                tool_name = getattr(tool_block, 'name', '')
+                                tool_input = getattr(tool_block, 'input', {})
+                                tool_id = getattr(tool_block, 'id', f"tool_{iteration}")
+                                tool_result = execute_data_tool(tool_name, tool_input, agent_data)
+                                tool_results.append({
+                                    "type": "tool_result",
+                                    "tool_use_id": tool_id,
+                                    "content": str(tool_result)
+                                })
+                            messages.append({"role": "user", "content": tool_results})
+                            response = llm_client.messages.create(
+                                model=config["llm_model"],
+                                max_tokens=1000,
+                                system=full_prompt,
+                                messages=messages,
+                                tools=data_tools
+                            )
+                        
+                        # Extract text response
+                        text_content = ""
+                        for block in response.content:
+                            if getattr(block, 'type', None) == "text":
+                                text_content += getattr(block, 'text', '')
+                        return text_content.strip() if text_content else "I processed your request but couldn't generate a text response."
+                    else:
+                        # No tools - simple call
+                        response = llm_client.messages.create(
+                            model=config["llm_model"],
+                            max_tokens=500,
+                            system=full_prompt,
+                            messages=[{"role": "user", "content": message}]
+                        )
+                        return response.content[0].text.strip()
+                
+                elif provider == "openai":
+                    response = llm_client.chat.completions.create(
+                        model=config["llm_model"],
+                        max_tokens=500,
+                        messages=[
+                            {"role": "system", "content": full_prompt},
+                            {"role": "user", "content": message}
+                        ]
+                    )
+                    return response.choices[0].message.content.strip()
+                
+                elif provider == "gemini":
+                    print("in the gemini if")
+                    response = llm_client.generate_content(
+                        f"{full_prompt}\n\nUser: {message}",
+                        generation_config=genai.GenerationConfig(max_output_tokens=500)
+                    )
+                    return response.text.strip()
                     
-                    response = anthropic_client.messages.create(**followup_params)
-                
-                # Extract final text response
-                text_content = ""
-                for block in response.content:
-                    if hasattr(block, 'type') and getattr(block, 'type', None) == "text":
-                        text_content += getattr(block, 'text', '')
-                    elif hasattr(block, 'text'):  # Fallback for text blocks
-                        text_content += getattr(block, 'text', '')
-                
-                if text_content:
-                    return text_content.strip()
-                else:
-                    return "I processed your request but couldn't generate a text response."
-                
             except Exception as e:
                 print(f"❌ LLM Error: {e}")
-                # Fall back to basic response
                 return f"Sorry, I'm having trouble processing that right now. Error: {str(e)}"
         
-        # Fallback to basic responses if LLM not available
+        # Fallback to basic response
         else:
             return _basic_fallback_response(message, config)
     
@@ -741,26 +779,58 @@ def main():
 
     AGENT_CONFIG["data"] = agent_data
     
-    # Check for Anthropic API key
-    if not AGENT_CONFIG.get("anthropic_api_key"):
-        safe_print("⚠️ Warning: ANTHROPIC_API_KEY not found in environment variables")
-        print("   The agent will use basic fallback responses only")
-        print("   Set ANTHROPIC_API_KEY to enable LLM capabilities")
-    else:
-        safe_print(f"🧠 LLM Model: {AGENT_CONFIG['model']}")
+    # Check for LLM API key
+    print(f"LLM PROVIDER: {AGENT_CONFIG['llm_provider']}")
+    print(f"🧠 LLM Model: {AGENT_CONFIG['model']}")
     
     # Create the LLM-powered agent logic based on configuration
     agent_logic = create_llm_agent_logic(AGENT_CONFIG)
     
+    print(f"Smithery api key: {os.getenv("SMITHERY_API_KEY")}")
     # Create and start the NANDA agent
     nanda = NANDA(
         agent_id=AGENT_CONFIG["agent_id"],
         agent_logic=agent_logic,
         port=PORT,
         registry_url=AGENT_CONFIG["registry_url"],
+        mcp_registry_url=AGENT_CONFIG["mcp_registry_url"],
         public_url=AGENT_CONFIG["public_url"],
-        enable_telemetry=False
+        enable_telemetry=True,
+        smithery_api_key=os.getenv("SMITHERY_API_KEY")
     )
+
+    tunnel_url = None
+    if AGENT_CONFIG["tunnel_enabled"]:
+        try:
+            print("🌐 Starting ngrok tunnel...")
+            tunnel = TunnelDeployer()
+            print(f"PORT: {PORT}")
+            tunnel_url = tunnel.deploy_local(port=PORT)
+            print(f"✅ Tunnel URL: {tunnel_url}")
+
+            print(f"🔍 Active tunnels:")
+            active_tunnels = tunnel.get_active_tunnels()
+            for t in active_tunnels:
+                print(f"  {t.public_url} -> localhost:{t.config['addr']}")
+
+            # print("🌐 Starting ngrok tunnel for telemetry...")
+            # telemetry_url = tunnel.deploy_local(port=PORT + 1)
+            # print(f"✅ Telemetry tunnel: {telemetry_url}")
+            # print(f"📊 Access logs at: {telemetry_url}/logs")
+            # print(f"📡 Stream logs at: {telemetry_url}/logs/stream")
+            
+            # print(f"🔍 Active tunnels:")
+            # active_tunnels = tunnel.get_active_tunnels()
+            # for t in active_tunnels:
+            #     print(f"  {t.public_url} -> localhost:{t.config['addr']}")
+            # Update public URL if registry enabled
+            if AGENT_CONFIG["registry_url"]:
+                AGENT_CONFIG["public_url"] = tunnel_url
+                # Re-register with tunnel URL
+                nanda.register_with_registry()
+        except Exception as e:
+            print(f"⚠️ Failed to start tunnel: {e}")
+            print("Agent will run on localhost only")
     
     safe_print(f"🚀 Agent URL: http://localhost:{PORT}/a2a")
     safe_print("💡 Try these messages:")
@@ -817,7 +887,9 @@ When someone asks about yourself, mention that you're part of the NANDA agent ne
         agent_logic=agent_logic,
         port=port,
         registry_url=custom_config["registry_url"],
-        enable_telemetry=False
+        mcp_registry_url=custom_config["mcp_registry_url"],
+        enable_telemetry=True,
+        smithery_api_key=os.getenv("SMITHERY_API_KEY")
     )
     
     safe_print(f"🤖 Starting custom LLM agent: {agent_name}")

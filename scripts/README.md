@@ -8,7 +8,7 @@ Production-ready scripts for deploying NANDA agents to AWS EC2.
 **`aws-single-agent-deployment.sh`** - Deploy one specialized agent to one EC2 instance
 
 ```bash
-bash aws-single-agent-deployment.sh <AGENT_ID> <API_KEY> <NAME> <DOMAIN> <SPECIALIZATION> <DESCRIPTION> <CAPABILITIES> [REGISTRY_URL] [PORT] [REGION] [INSTANCE_TYPE]
+bash aws-single-agent-deployment.sh <AGENT_ID> <API_KEY> <NAME> <DOMAIN> <SPECIALIZATION> <DESCRIPTION> <CAPABILITIES> [SMITHERY_API_KEY] [REGISTRY_URL] [MCP_REGISTRY_URL] [PORT] [REGION] [INSTANCE_TYPE]
 ```
 
 **Example:**
@@ -21,7 +21,9 @@ bash aws-single-agent-deployment.sh \
   "expert data analyst and machine learning specialist" \
   "I help with statistical analysis, machine learning, and data visualization" \
   "python,statistics,machine learning,data visualization" \
+  "smithery-key-xxxxx" \
   "http://registry.chat39.com:6900" \
+  "https://your-mcp-registry.ngrok-free.app" \
   "6000" \
   "us-east-1" \
   "t3.micro"
@@ -31,7 +33,7 @@ bash aws-single-agent-deployment.sh \
 **`aws-multi-agent-deployment.sh`** - Deploy 10 agents to one EC2 instance
 
 ```bash
-bash aws-multi-agent-deployment.sh <API_KEY> <CONFIG_JSON> [REGISTRY_URL] [REGION] [INSTANCE_TYPE]
+bash aws-multi-agent-deployment.sh <API_KEY> <CONFIG_JSON> [SMITHERY_API_KEY] [REGISTRY_URL] [MCP_REGISTRY_URL] [REGION] [INSTANCE_TYPE]
 ```
 
 **Example:**
@@ -39,7 +41,9 @@ bash aws-multi-agent-deployment.sh <API_KEY> <CONFIG_JSON> [REGISTRY_URL] [REGIO
 bash aws-multi-agent-deployment.sh \
   "sk-ant-api03-..." \
   "agent_configs/group-01-business-and-finance-experts.json" \
+  "smithery-key-xxxxx" \
   "http://registry.chat39.com:6900" \
+  "https://your-mcp-registry.ngrok-free.app" \
   "us-east-1" \
   "t3.xlarge"
 ```
