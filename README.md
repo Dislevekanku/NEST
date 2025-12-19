@@ -142,6 +142,57 @@ Each deployed agent includes:
 - `PUBLIC_URL`: Agent's public URL for A2A communication
 - `PORT`: Port number for the agent server
 
+### Attached Data and `DATA_PATH`
+
+NEST supports attaching a local dataset to an agent via the `DATA_PATH` environment variable. The agent will load this file on startup and expose it through its configuration.
+
+- **Supported formats**: `.csv` (via pandas DataFrame) and `.json` (via Python `json`)
+- **Where it is used**: `examples/nanda_agent.py` reads `DATA_PATH`, loads the file, and assigns it to `AGENT_CONFIG["data"]`
+
+**Local development**
+
+- **CSV example**:
+  - Create a data file under `data/`, for example `data/hr.csv` (see `DATA_SETUP_INSTRUCTIONS.md` for a ready-made HR dataset).
+  - Start the agent with `DATA_PATH` set:
+
+```bash
+# Linux / Mac
+DATA_PATH=data/hr.csv python examples/nanda_agent.py
+
+# Windows PowerShell
+$env:DATA_PATH="data/hr.csv"; python examples/nanda_agent.py
+```
+
+When `DATA_PATH` is set, the agent will attempt to load the file and log whether loading succeeded; if loading fails or `DATA_PATH` is unset, the agent will continue without attached data.
+
+**AWS deployment**
+
+The single-agent deployment script accepts an optional **12th parameter** that becomes the `DATA_PATH` environment variable on the EC2 instance (see `DATA_PATH_HOOK_CHANGES.md` for details):
+
+```bash
+bash scripts/aws-single-agent-deployment.sh \
+  "hr-agent" \
+  "sk-ant-xxxxx" \
+  "HR Assistant" \
+  "human resources" \
+  "HR specialist" \
+  "I help with HR questions and employee data" \
+  "HR,employee data,payroll,benefits" \
+  "http://registry.chat39.com:6900" \
+  "6000" \
+  "us-east-1" \
+  "t3.small" \
+  "data/hr.csv"    # 12th argument: DATA_PATH passed through to the agent
+```
+
+On the EC2 host the user-data script exports:
+
+```bash
+export DATA_PATH='$DATA_PATH'
+```
+
+so the running agent sees the same path via `os.getenv("DATA_PATH")` and loads the attached dataset at startup.
+
 ### Agent Personality Configuration
 
 Agents are configured with:

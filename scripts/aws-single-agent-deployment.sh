@@ -130,7 +130,16 @@ date
 
 # Update system and install dependencies
 apt-get update -y
-apt-get install -y python3 python3-venv python3-pip git curl
+apt-get install -y python3 python3-venv python3-pip git curl unzip
+
+# Install AWS CLI v2
+if ! command -v aws &> /dev/null; then
+    echo "Installing AWS CLI v2..."
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip -q awscliv2.zip
+    ./aws/install
+    rm -rf aws awscliv2.zip
+fi
 
 # Setup project as ubuntu user
 cd /home/ubuntu
@@ -139,7 +148,7 @@ cd nanda-agent-$AGENT_ID
 
 # Create virtual environment and install
 sudo -u ubuntu python3 -m venv env
-sudo -u ubuntu bash -c "source env/bin/activate && pip install --upgrade pip && pip install -e . && pip install anthropic"
+sudo -u ubuntu bash -c "source env/bin/activate && pip install --upgrade pip && pip install -e . && pip install anthropic pandas"
 
 # Configure the modular agent with all environment variables
 sudo -u ubuntu sed -i "s/PORT = 6000/PORT = $PORT/" examples/nanda_agent.py
@@ -166,9 +175,24 @@ if [ -z "\$PUBLIC_IP" ]; then
     exit 1
 fi
 
-# Log data path status
-if [ -n "$DATA_PATH" ]; then
-    echo "DATA_PATH is set to: $DATA_PATH"
+# Attach data if DATA_PATH is provided
+FINAL_DATA_PATH=""
+if [[ "$DATA_PATH" == s3://* ]]; then
+    echo "Downloading data from S3: $DATA_PATH"
+    mkdir -p /home/ubuntu/agent-data
+    if aws s3 cp "$DATA_PATH" /home/ubuntu/agent-data/data.csv; then
+        chown ubuntu:ubuntu /home/ubuntu/agent-data/data.csv
+        chmod 644 /home/ubuntu/agent-data/data.csv
+        FINAL_DATA_PATH="/home/ubuntu/agent-data/data.csv"
+        echo "Data downloaded successfully to $FINAL_DATA_PATH"
+        ls -la /home/ubuntu/agent-data/data.csv
+    else
+        echo "ERROR: Failed to download data from S3"
+        FINAL_DATA_PATH=""
+    fi
+elif [ -n "$DATA_PATH" ]; then
+    echo "DATA_PATH is set to: $DATA_PATH (local path)"
+    FINAL_DATA_PATH="$DATA_PATH"
 else
     echo "No DATA_PATH provided; starting agent without attached data."
 fi
@@ -188,7 +212,7 @@ sudo -u ubuntu bash -c "
     export REGISTRY_URL='$REGISTRY_URL'
     export PUBLIC_URL='http://\$PUBLIC_IP:$PORT'
     export PORT='$PORT'
-    export DATA_PATH='$DATA_PATH'
+    export DATA_PATH="\$FINAL_DATA_PATH"
     nohup python3 examples/nanda_agent.py > agent.log 2>&1 &
 "
 
