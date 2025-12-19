@@ -385,7 +385,20 @@ class SimpleAgentBridge(A2AServer):
             # Look up agent URL
             agent_url = self._lookup_agent(target_agent_id)
             if not agent_url:
-                return f"Agent {target_agent_id} not found"
+                # Enhanced fallback: try known deployed agents
+                known_agents_fallback = {
+                    "menu-agent": "http://54.237.202.184:6000",
+                    "concierge-agent": "http://3.94.191.179:6000",
+                }
+                # Check if target_agent_id matches or starts with known agent base name
+                for known_id, known_url in known_agents_fallback.items():
+                    if target_agent_id == known_id or target_agent_id.startswith(known_id):
+                        agent_url = known_url
+                        logger.info(f"🏠 Using fallback URL for {target_agent_id}: {agent_url}")
+                        break
+                
+                if not agent_url:
+                    return f"Agent {target_agent_id} not found"
             
             # Ensure URL has /a2a endpoint
             if not agent_url.endswith('/a2a'):
@@ -437,23 +450,52 @@ class SimpleAgentBridge(A2AServer):
         # Try registry lookup if available
         if self.registry_url:
             try:
+                # First try exact match
                 response = requests.get(f"{self.registry_url}/lookup/{agent_id}", timeout=10)
                 if response.status_code == 200:
                     data = response.json()
-                    agent_url = data.get("agent_url")
-                    logger.info(f"🌐 Found {agent_id} in registry: {agent_url}")
-                    return agent_url
+                    agent_url = data.get("agent_url") or data.get("url")
+                    if agent_url:
+                        logger.info(f"🌐 Found {agent_id} in registry (exact match): {agent_url}")
+                        return agent_url
+                
+                # If exact match fails, try prefix search by listing all agents
+                logger.info(f"🌐 Exact match failed for {agent_id}, trying prefix search...")
+                list_response = requests.get(f"{self.registry_url}/list", timeout=10)
+                if list_response.status_code == 200:
+                    agents_data = list_response.json()
+                    # Handle both array and object with agents key
+                    agents = agents_data if isinstance(agents_data, list) else agents_data.get("agents", [])
+                    
+                    # Find agents that start with the given agent_id
+                    matching_agents = [
+                        a for a in agents 
+                        if (a.get("agent_id") or a.get("id", "")).startswith(agent_id)
+                    ]
+                    
+                    if matching_agents:
+                        # Use the most recent one (last in list) or first match
+                        matched_agent = matching_agents[-1]
+                        agent_url = matched_agent.get("agent_url") or matched_agent.get("url") or matched_agent.get("public_url")
+                        matched_id = matched_agent.get("agent_id") or matched_agent.get("id")
+                        if agent_url:
+                            logger.info(f"🌐 Found {agent_id} in registry (prefix match): {matched_id} at {agent_url}")
+                            return agent_url
             except Exception as e:
                 logger.warning(f"🌐 Registry lookup failed: {e}")
         
-        # Fallback to local discovery (for testing)
-        local_agents = {
+        # Fallback to known deployed agents
+        known_agents = {
+            "menu-agent": "http://54.237.202.184:6000",
+            "concierge-agent": "http://3.94.191.179:6000",
             "test_agent": "http://localhost:6000",
         }
         
-        if agent_id in local_agents:
-            logger.info(f"🏠 Found {agent_id} locally: {local_agents[agent_id]}")
-            return local_agents[agent_id]
+        # Check for exact match or prefix match in known agents
+        for known_id, known_url in known_agents.items():
+            if agent_id == known_id or agent_id.startswith(known_id):
+                logger.info(f"🏠 Found {agent_id} in known agents: {known_url}")
+                return known_url
         
         return None
     
