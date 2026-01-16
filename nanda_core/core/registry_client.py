@@ -29,7 +29,7 @@ class RegistryClient:
             pass
         return "https://registry.chat39.com"
 
-    def register_agent(self, agent_id: str, agent_url: str, api_url: Optional[str] = None, agent_facts_url: Optional[str] = None) -> bool:
+    def register_agent(self, agent_id: str, agent_url: str, api_url: Optional[str] = None, agent_facts_url: Optional[str] = None, data_facts_url: Optional[str] = None) -> bool:
         """Register an agent with the registry"""
         try:
             data = {
@@ -40,6 +40,8 @@ class RegistryClient:
                 data["api_url"] = api_url
             if agent_facts_url:
                 data["agent_facts_url"] = agent_facts_url
+            if data_facts_url:
+                data["data_facts_url"] = data_facts_url
 
             response = self.session.post(f"{self.registry_url}/register", json=data)
             return response.status_code == 200

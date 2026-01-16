@@ -1,0 +1,17 @@
+{
+  "agent_id": "agent_finance_feed_01",
+  "agent_name": "Finance Feed Agent",
+  "agent_domain": "financial data",
+  "agent_specialization": "stock market data provider",
+  "agent_description": "Provides a public stock ticker dataset via Data Facts using real Yahoo Finance API.",
+  "capabilities": [
+    "serve_public_stock_data",
+    "financial_data_access",
+    "real-time_stock_prices"
+  ],
+  "data_facts_pointer": "http://localhost:9000/data_facts/public_stock_ticker.json",
+  "registry_url": "http://registry.chat39.com:6900",
+  "agent_url": "http://localhost:6000/a2a",
+  "public_url": "http://localhost:6000"
+}
+

@@ -1,0 +1,14 @@
+{
+  "dataset_id": "public_stock_ticker",
+  "dataset_description": "Live stock price feed for TSLA, AAPL, ETH-USD via Yahoo Finance API. Updates every 10 minutes.",
+  "update_frequency": "10 minutes",
+  "data_owner": "agent_finance_feed_01",
+  "access_type": "public",
+  "endpoint": "http://localhost:8000/stock_prices",
+  "evidence": {
+    "last_updated": "2026-01-13T01:25:56.657235+00:00",
+    "checksum_sha256": "32a79f0699020fee08884f7724347500952f99a1128c5423f0e5e6939a2a8881",
+    "source": "yahoo_finance_api"
+  },
+  "ttl_seconds": 600
+}

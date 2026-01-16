@@ -30,7 +30,8 @@ class NANDA:
                  public_url: Optional[str] = None,
                  host: str = "0.0.0.0",
                  enable_telemetry: bool = True,
-                 smithery_api_key: Optional[str] = None):
+                 smithery_api_key: Optional[str] = None,
+                 data_facts_url: Optional[str] = None):
         """
         Create a simple NANDA agent
         
@@ -45,6 +46,7 @@ class NANDA:
             host: Host to bind to
             enable_telemetry: Enable telemetry logging (optional)
             smithery_api_key: Optional Smithery API key for MCP server authentication
+            data_facts_url: Optional URL to Data Facts JSON endpoint for dataset discovery
         """
         self.agent_id = agent_id
         self.port = port
@@ -54,6 +56,7 @@ class NANDA:
         self.host = host
         self.enable_telemetry = enable_telemetry
         self.smithery_api_key = smithery_api_key
+        self.data_facts_url = data_facts_url
         
         # Handle both old (agent_logic) and new (agent) interfaces
         if agent is not None and agent_logic is not None:
@@ -126,6 +129,8 @@ class NANDA:
                 "agent_id": self.agent_id,
                 "agent_url": self.public_url
             }
+            if self.data_facts_url:
+                data["data_facts_url"] = self.data_facts_url
             response = requests.post(f"{self.registry_url}/register", json=data, timeout=10)
             if response.status_code == 200:
                 print(f"✅ Agent '{self.agent_id}' registered successfully")
