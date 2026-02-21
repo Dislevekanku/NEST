@@ -1,0 +1,61 @@
+{
+  "run_tag": "batch_a_20260208_163502",
+  "total_requests": 60,
+  "successes": 60,
+  "failures": 0,
+  "success_rate": 100.0,
+  "avg_latency_ms": 608.2,
+  "error_breakdown": {},
+  "batch": "A",
+  "deployed": 10,
+  "healthy": 10,
+  "smoke_test": {
+    "agents_tested": 10,
+    "total_requests": 20,
+    "successes": 20,
+    "failures": 0,
+    "success_rate": 100.0,
+    "per_agent_results": {
+      "consumer_001": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_002": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_003": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_004": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_005": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_006": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_007": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_008": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_009": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_010": {
+        "success": 2,
+        "failed": 0
+      }
+    }
+  }
+}

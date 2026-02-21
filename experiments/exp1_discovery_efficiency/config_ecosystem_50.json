@@ -1,0 +1,22 @@
+{
+  "use_data_facts": true,
+  "ttl_enabled": true,
+  "checksum_enabled": true,
+  "registry_url": "http://registry.chat39.com:6900",
+  "use_multiple_agents": true,
+  "keywords": [],
+  "dataset_endpoints": [
+    "http://ECOSYSTEM_IP:8000/public-stock-ticker",
+    "http://ECOSYSTEM_IP:8000/public-weather-data",
+    "http://ECOSYSTEM_IP:8000/public-timestamp",
+    "http://ECOSYSTEM_IP:8000/public-uuid",
+    "http://ECOSYSTEM_IP:8000/public-lorem",
+    "http://ECOSYSTEM_IP:8000/public-countries"
+  ],
+  "dataset_endpoint": null,
+  "data_facts_url": null,
+  "target_agent_id": null,
+  "target_dataset_id": null,
+  "rng_seed": 42,
+  "request_timeout_seconds": 10
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Experiment config template. Copy and override for each run. Use with access_dataset_from_config().",
+  "use_data_facts": true,
+  "ttl_enabled": true,
+  "checksum_enabled": true,
+  "registry_url": "http://registry.chat39.com:6900",
+  "data_facts_url": null,
+  "dataset_endpoint": null,
+  "target_agent_id": "finance-feed-agent",
+  "target_dataset_id": "public_stock_ticker",
+  "tier": "n50",
+  "access_headers": null,
+  "keywords": ["finance", "stock"],
+  "metadata": {
+    "run_id": null,
+    "description": "Data Facts toggle experiment: with/without Data Facts, TTL on/off, checksum on/off"
+  }
+}

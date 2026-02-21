@@ -1,0 +1,8 @@
+## Experiment 1: Discovery Efficiency — 50 agents (N=50, 200)
+
+| Mode | N | Mean TTD (s) | p50 TTD (s) | p95 TTD (s) | Failed lookups | Steps/query | Success rate |
+|------|---|--------------|-------------|-------------|----------------|-------------|--------------|
+| baseline | 50 | 0.443 | 0.153 | 1.375 | 0 | 1 | 100.0% |
+| treatment | 50 | — | — | — | 50 | 3 | 0.0% |
+| baseline | 200 | 0.431 | 0.120 | 1.432 | 3 | 1 | 98.5% |
+| treatment | 200 | — | — | — | 200 | 3 | 0.0% |

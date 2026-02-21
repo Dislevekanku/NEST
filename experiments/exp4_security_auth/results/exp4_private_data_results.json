@@ -1,0 +1,94 @@
+{
+  "run_tag": "exp4_real_agents_20260211_200121",
+  "mode": "real-agents",
+  "owner_data_url": "http://localhost:6350",
+  "scenarios": [
+    {
+      "agent_id": "authorized_consumer_01",
+      "scenario": "authorized",
+      "steps": [
+        {
+          "step": "fetch_data_facts",
+          "status": "ok",
+          "latency_ms": 2321.65
+        },
+        {
+          "step": "negotiate_access",
+          "status": "ok",
+          "latency_ms": 2036.91
+        },
+        {
+          "step": "fetch_dataset",
+          "status": "ok",
+          "latency_ms": 2136.68,
+          "row_count": 20
+        },
+        {
+          "step": "verify_checksum",
+          "status": "ok"
+        },
+        {
+          "step": "check_freshness",
+          "status": "fresh"
+        }
+      ],
+      "overall": "PASS"
+    },
+    {
+      "agent_id": "expired_consumer_01",
+      "scenario": "expired",
+      "steps": [
+        {
+          "step": "negotiate_access",
+          "status": "ok",
+          "latency_ms": 2051.73,
+          "ttl": 2
+        },
+        {
+          "step": "fetch_dataset_expired",
+          "status_code": 401,
+          "latency_ms": 2057.29,
+          "body": {
+            "error": "Access denied"
+          }
+        }
+      ],
+      "overall": "PASS"
+    },
+    {
+      "agent_id": "malicious_consumer_01",
+      "scenario": "malicious",
+      "steps": [
+        {
+          "step": "forged_wrong_secret",
+          "status_code": 401,
+          "latency_ms": 2057.04
+        },
+        {
+          "step": "malformed_garbage",
+          "status_code": 401,
+          "latency_ms": 2047.81
+        }
+      ],
+      "overall": "PASS"
+    },
+    {
+      "agent_id": "unauthorized_consumer_01",
+      "scenario": "unauthorized",
+      "steps": [
+        {
+          "step": "fetch_no_auth",
+          "status_code": 401,
+          "latency_ms": 2032.65
+        },
+        {
+          "step": "fetch_empty_auth",
+          "status_code": 401,
+          "latency_ms": 2071.69
+        }
+      ],
+      "overall": "PASS"
+    }
+  ],
+  "all_pass": true
+}

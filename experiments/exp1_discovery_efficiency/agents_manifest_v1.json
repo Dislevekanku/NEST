@@ -1,0 +1,137 @@
+{
+  "version": "1.0.0",
+  "created": "2026-02-06",
+  "description": "Locked 50-agent topology for NEST paper experiments",
+  "registry": {
+    "id": "registry_main",
+    "url": "http://registry.chat39.com:6900",
+    "type": "nanda_index"
+  },
+  "topology": {
+    "total_agents": 53,
+    "providers": 2,
+    "consumers": 50,
+    "registry": 1
+  },
+  "providers": [
+    {
+      "agent_id": "provider_finance_01",
+      "agent_name": "Finance Data Provider",
+      "role": "provider",
+      "domain": "financial_data",
+      "specialization": "Real-time stock market data provider",
+      "description": "Provides public stock ticker dataset via Data Facts using Yahoo Finance API",
+      "capabilities": ["serve_public_stock_data", "financial_data_access", "real_time_stock_prices"],
+      "port": 6000,
+      "data_server_port": 8000,
+      "stock_tickers": ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"],
+      "endpoints": {
+        "a2a": "/a2a",
+        "health": "/health",
+        "data_facts": "/data_facts/public_stock_ticker.json"
+      },
+      "url_template": "http://{host}:{port}",
+      "data_facts_url_template": "http://{host}:{data_server_port}/data_facts/public_stock_ticker.json"
+    },
+    {
+      "agent_id": "provider_weather_01",
+      "agent_name": "Weather Data Provider",
+      "role": "provider",
+      "domain": "weather_data",
+      "specialization": "Real-time weather information provider",
+      "description": "Provides weather dataset via Data Facts for major cities",
+      "capabilities": ["serve_weather_data", "meteorological_data_access", "forecast_data"],
+      "port": 6002,
+      "data_server_port": 8002,
+      "cities": ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"],
+      "endpoints": {
+        "a2a": "/a2a",
+        "health": "/health",
+        "data_facts": "/data_facts/public_weather.json"
+      },
+      "url_template": "http://{host}:{port}",
+      "data_facts_url_template": "http://{host}:{data_server_port}/data_facts/public_weather.json"
+    }
+  ],
+  "consumers": [
+    {"agent_id": "consumer_001", "agent_name": "Consumer Agent 001", "role": "consumer", "port": 6100, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_002", "agent_name": "Consumer Agent 002", "role": "consumer", "port": 6101, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_003", "agent_name": "Consumer Agent 003", "role": "consumer", "port": 6102, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_004", "agent_name": "Consumer Agent 004", "role": "consumer", "port": 6103, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_005", "agent_name": "Consumer Agent 005", "role": "consumer", "port": 6104, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_006", "agent_name": "Consumer Agent 006", "role": "consumer", "port": 6105, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_007", "agent_name": "Consumer Agent 007", "role": "consumer", "port": 6106, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_008", "agent_name": "Consumer Agent 008", "role": "consumer", "port": 6107, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_009", "agent_name": "Consumer Agent 009", "role": "consumer", "port": 6108, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_010", "agent_name": "Consumer Agent 010", "role": "consumer", "port": 6109, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_011", "agent_name": "Consumer Agent 011", "role": "consumer", "port": 6110, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_012", "agent_name": "Consumer Agent 012", "role": "consumer", "port": 6111, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_013", "agent_name": "Consumer Agent 013", "role": "consumer", "port": 6112, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_014", "agent_name": "Consumer Agent 014", "role": "consumer", "port": 6113, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_015", "agent_name": "Consumer Agent 015", "role": "consumer", "port": 6114, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_016", "agent_name": "Consumer Agent 016", "role": "consumer", "port": 6115, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_017", "agent_name": "Consumer Agent 017", "role": "consumer", "port": 6116, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_018", "agent_name": "Consumer Agent 018", "role": "consumer", "port": 6117, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_019", "agent_name": "Consumer Agent 019", "role": "consumer", "port": 6118, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_020", "agent_name": "Consumer Agent 020", "role": "consumer", "port": 6119, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_021", "agent_name": "Consumer Agent 021", "role": "consumer", "port": 6120, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_022", "agent_name": "Consumer Agent 022", "role": "consumer", "port": 6121, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_023", "agent_name": "Consumer Agent 023", "role": "consumer", "port": 6122, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_024", "agent_name": "Consumer Agent 024", "role": "consumer", "port": 6123, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_025", "agent_name": "Consumer Agent 025", "role": "consumer", "port": 6124, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_026", "agent_name": "Consumer Agent 026", "role": "consumer", "port": 6125, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_027", "agent_name": "Consumer Agent 027", "role": "consumer", "port": 6126, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_028", "agent_name": "Consumer Agent 028", "role": "consumer", "port": 6127, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_029", "agent_name": "Consumer Agent 029", "role": "consumer", "port": 6128, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_030", "agent_name": "Consumer Agent 030", "role": "consumer", "port": 6129, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_031", "agent_name": "Consumer Agent 031", "role": "consumer", "port": 6130, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_032", "agent_name": "Consumer Agent 032", "role": "consumer", "port": 6131, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_033", "agent_name": "Consumer Agent 033", "role": "consumer", "port": 6132, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_034", "agent_name": "Consumer Agent 034", "role": "consumer", "port": 6133, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_035", "agent_name": "Consumer Agent 035", "role": "consumer", "port": 6134, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_036", "agent_name": "Consumer Agent 036", "role": "consumer", "port": 6135, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_037", "agent_name": "Consumer Agent 037", "role": "consumer", "port": 6136, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_038", "agent_name": "Consumer Agent 038", "role": "consumer", "port": 6137, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_039", "agent_name": "Consumer Agent 039", "role": "consumer", "port": 6138, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_040", "agent_name": "Consumer Agent 040", "role": "consumer", "port": 6139, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_041", "agent_name": "Consumer Agent 041", "role": "consumer", "port": 6140, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_042", "agent_name": "Consumer Agent 042", "role": "consumer", "port": 6141, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_043", "agent_name": "Consumer Agent 043", "role": "consumer", "port": 6142, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_044", "agent_name": "Consumer Agent 044", "role": "consumer", "port": 6143, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_045", "agent_name": "Consumer Agent 045", "role": "consumer", "port": 6144, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_046", "agent_name": "Consumer Agent 046", "role": "consumer", "port": 6145, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_047", "agent_name": "Consumer Agent 047", "role": "consumer", "port": 6146, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_048", "agent_name": "Consumer Agent 048", "role": "consumer", "port": 6147, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_049", "agent_name": "Consumer Agent 049", "role": "consumer", "port": 6148, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]},
+    {"agent_id": "consumer_050", "agent_name": "Consumer Agent 050", "role": "consumer", "port": 6149, "domain": "general", "capabilities": ["data_consumer", "registry_lookup", "a2a_communication"]}
+  ],
+  "consumer_defaults": {
+    "specialization": "Generic data consumer agent for NEST experiments",
+    "description": "Consumer agent that discovers and accesses datasets from providers via registry and Data Facts",
+    "endpoints": {
+      "a2a": "/a2a",
+      "health": "/health"
+    },
+    "url_template": "http://{host}:{port}"
+  },
+  "protocol_requirements": {
+    "a2a_endpoint": {
+      "path": "/a2a",
+      "method": "POST",
+      "required": true,
+      "description": "Agent-to-Agent communication endpoint"
+    },
+    "health_endpoint": {
+      "path": "/a2a/health",
+      "method": "GET",
+      "required": true,
+      "description": "Health check endpoint returning {status: 'ok'} (python_a2a server)"
+    },
+    "data_facts_endpoint": {
+      "path": "/data_facts/{dataset_id}.json",
+      "method": "GET",
+      "required": "providers_only",
+      "description": "Data Facts metadata endpoint for providers"
+    }
+  }
+}

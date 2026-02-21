@@ -1,0 +1,31 @@
+{
+  "agent_id": "authorized_consumer_01",
+  "scenario": "authorized",
+  "steps": [
+    {
+      "step": "fetch_data_facts",
+      "status": "ok",
+      "latency_ms": 2321.65
+    },
+    {
+      "step": "negotiate_access",
+      "status": "ok",
+      "latency_ms": 2036.91
+    },
+    {
+      "step": "fetch_dataset",
+      "status": "ok",
+      "latency_ms": 2136.68,
+      "row_count": 20
+    },
+    {
+      "step": "verify_checksum",
+      "status": "ok"
+    },
+    {
+      "step": "check_freshness",
+      "status": "fresh"
+    }
+  ],
+  "overall": "PASS"
+}

@@ -1,0 +1,83 @@
+{
+  "run_tag": "batch_b_20260208_163628",
+  "total_requests": 91,
+  "successes": 90,
+  "failures": 1,
+  "success_rate": 98.9,
+  "avg_latency_ms": 833.79,
+  "error_breakdown": {
+    "timeout": 1
+  },
+  "batch": "B",
+  "deployed": 15,
+  "healthy": 15,
+  "smoke_test": {
+    "agents_tested": 15,
+    "total_requests": 30,
+    "successes": 30,
+    "failures": 0,
+    "success_rate": 100.0,
+    "per_agent_results": {
+      "consumer_011": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_012": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_013": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_014": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_015": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_016": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_017": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_018": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_019": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_020": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_021": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_022": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_023": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_024": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_025": {
+        "success": 2,
+        "failed": 0
+      }
+    }
+  }
+}

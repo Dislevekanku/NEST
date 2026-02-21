@@ -1,0 +1,17 @@
+{
+  "agent_id": "unauthorized_consumer_01",
+  "scenario": "unauthorized",
+  "steps": [
+    {
+      "step": "fetch_no_auth",
+      "status_code": 401,
+      "latency_ms": 2032.65
+    },
+    {
+      "step": "fetch_empty_auth",
+      "status_code": 401,
+      "latency_ms": 2071.69
+    }
+  ],
+  "overall": "PASS"
+}

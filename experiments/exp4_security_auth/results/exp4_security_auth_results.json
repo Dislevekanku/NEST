@@ -1,0 +1,71 @@
+{
+  "run_tag": "exp4_security_auth_20260209_211030",
+  "config": {
+    "rng_seed": 42,
+    "n_trials_per_scenario": 50,
+    "token_ttl_seconds_owner": 3600,
+    "token_ttl_seconds_inquiry": 60,
+    "simulated_gateway_latency_ms": 2.0,
+    "simulated_db_latency_ms": 1.5
+  },
+  "scenarios": [
+    {
+      "n": 50,
+      "success_count": 50,
+      "auth_success_pct": 100.0,
+      "mean_auth_latency_ms": 4.711,
+      "error_counts": {
+        "expired": 0,
+        "malformed": 0,
+        "missing": 0
+      },
+      "scenario": "owner_valid",
+      "label": "Owner agent, valid token"
+    },
+    {
+      "n": 50,
+      "success_count": 50,
+      "auth_success_pct": 100.0,
+      "mean_auth_latency_ms": 4.719,
+      "error_counts": {
+        "expired": 0,
+        "malformed": 0,
+        "missing": 0
+      },
+      "scenario": "inquiry_valid",
+      "label": "Inquiry agent, short-lived valid token"
+    },
+    {
+      "n": 50,
+      "success_count": 0,
+      "auth_success_pct": 0.0,
+      "mean_auth_latency_ms": null,
+      "error_counts": {
+        "expired": 50,
+        "malformed": 0,
+        "missing": 0
+      },
+      "scenario": "expired",
+      "label": "Expired token"
+    },
+    {
+      "n": 50,
+      "success_count": 0,
+      "auth_success_pct": 0.0,
+      "mean_auth_latency_ms": null,
+      "error_counts": {
+        "expired": 0,
+        "malformed": 50,
+        "missing": 0
+      },
+      "scenario": "malformed",
+      "label": "Malformed token"
+    }
+  ],
+  "flows_tested": [
+    "owner (valid)",
+    "inquiry (short-lived valid)",
+    "expired",
+    "malformed"
+  ]
+}

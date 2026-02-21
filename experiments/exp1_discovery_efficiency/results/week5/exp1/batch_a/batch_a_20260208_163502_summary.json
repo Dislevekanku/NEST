@@ -1,0 +1,9 @@
+{
+  "run_tag": "batch_a_20260208_163502",
+  "total_requests": 60,
+  "successes": 60,
+  "failures": 0,
+  "success_rate": 100.0,
+  "avg_latency_ms": 608.2,
+  "error_breakdown": {}
+}

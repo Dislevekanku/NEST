@@ -1,0 +1,9 @@
+{
+  "dataset_endpoint": "http://54.172.251.235:8000/public-stock-ticker",
+  "registry_url": "http://registry.chat39.com:6900",
+  "data_facts_url": "http://54.172.251.235:8000/data_facts/public_stock_ticker.json",
+  "target_agent_id": "finance-feed-agent",
+  "target_dataset_id": "public_stock_ticker",
+  "keywords": ["finance", "stock"],
+  "request_timeout_seconds": 10
+}

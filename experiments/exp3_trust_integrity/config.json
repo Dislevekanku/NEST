@@ -1,0 +1,6 @@
+{
+  "n_trials_per_level": 200,
+  "payload_bytes": 2048,
+  "corruption_percents": [0, 1, 5, 10, 25, 50],
+  "rng_seed": 1337
+}

@@ -1,0 +1,12 @@
+{
+  "run_tag": "batch_c_20260208_171233",
+  "total_requests": 151,
+  "successes": 129,
+  "failures": 22,
+  "success_rate": 85.43,
+  "avg_latency_ms": 743.89,
+  "error_breakdown": {
+    "connection_refused": 1,
+    "http_400": 21
+  }
+}

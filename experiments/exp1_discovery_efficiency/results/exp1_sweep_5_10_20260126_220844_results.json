@@ -1,0 +1,146 @@
+{
+  "run_tag": "exp1_sweep_5_10_20260126_220844",
+  "sweep_ns": [
+    5,
+    10
+  ],
+  "config": {
+    "use_data_facts": true,
+    "ttl_enabled": true,
+    "checksum_enabled": true,
+    "registry_url": "http://localhost:6900",
+    "use_multiple_agents": true,
+    "keywords": [],
+    "dataset_endpoints": [
+      "http://localhost:8000/public-stock-ticker",
+      "http://localhost:8000/public-weather-data",
+      "http://localhost:8000/public-timestamp",
+      "http://localhost:8000/public-uuid",
+      "http://localhost:8000/public-lorem",
+      "http://localhost:8000/public-countries"
+    ],
+    "dataset_endpoint": null,
+    "data_facts_url": null,
+    "target_agent_id": null,
+    "target_dataset_id": null,
+    "rng_seed": 42,
+    "request_timeout_seconds": 10
+  },
+  "summary": [
+    {
+      "mode": "baseline",
+      "n": 5,
+      "steps_per_query": 1,
+      "total_queries": 5,
+      "failed_lookups": 0,
+      "successful_retrievals": 5,
+      "pct_success": 100.0,
+      "mean_time_to_first_data_seconds": 4.52668524000328,
+      "median_time_to_first_data_seconds": 2.0492668000078993,
+      "time_to_first_data_seconds_count": 5
+    },
+    {
+      "mode": "treatment",
+      "n": 5,
+      "steps_per_query": 3,
+      "total_queries": 5,
+      "failed_lookups": 5,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null,
+      "time_to_first_data_seconds_count": 0
+    },
+    {
+      "mode": "baseline",
+      "n": 10,
+      "steps_per_query": 1,
+      "total_queries": 10,
+      "failed_lookups": 0,
+      "successful_retrievals": 10,
+      "pct_success": 100.0,
+      "mean_time_to_first_data_seconds": 5.7122665300004885,
+      "median_time_to_first_data_seconds": 8.138945300001069,
+      "time_to_first_data_seconds_count": 10
+    },
+    {
+      "mode": "treatment",
+      "n": 10,
+      "steps_per_query": 3,
+      "total_queries": 10,
+      "failed_lookups": 10,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null,
+      "time_to_first_data_seconds_count": 0
+    }
+  ],
+  "full_results": [
+    {
+      "mode": "baseline",
+      "n": 5,
+      "steps_per_query": 1,
+      "total_queries": 5,
+      "failed_lookups": 0,
+      "successful_retrievals": 5,
+      "pct_success": 100.0,
+      "time_to_first_data_seconds": [
+        2.0492668000078993,
+        8.34872809999797,
+        8.197885000001406,
+        2.0218722999998135,
+        2.0156740000093123
+      ],
+      "mean_time_to_first_data_seconds": 4.52668524000328,
+      "median_time_to_first_data_seconds": 2.0492668000078993
+    },
+    {
+      "mode": "treatment",
+      "n": 5,
+      "steps_per_query": 3,
+      "total_queries": 5,
+      "failed_lookups": 5,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "time_to_first_data_seconds": [],
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null
+    },
+    {
+      "mode": "baseline",
+      "n": 10,
+      "steps_per_query": 1,
+      "total_queries": 10,
+      "failed_lookups": 0,
+      "successful_retrievals": 10,
+      "pct_success": 100.0,
+      "time_to_first_data_seconds": [
+        2.057289499993203,
+        8.138945300001069,
+        8.175428899994586,
+        2.0466989999986254,
+        2.0542903000023216,
+        8.1642625000095,
+        8.181496499993955,
+        8.168082700009109,
+        2.019876899998053,
+        8.116293700004462
+      ],
+      "mean_time_to_first_data_seconds": 5.7122665300004885,
+      "median_time_to_first_data_seconds": 8.138945300001069
+    },
+    {
+      "mode": "treatment",
+      "n": 10,
+      "steps_per_query": 3,
+      "total_queries": 10,
+      "failed_lookups": 10,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "time_to_first_data_seconds": [],
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "run_tag": "batch_c_20260208_171233",
+  "total_requests": 151,
+  "successes": 129,
+  "failures": 22,
+  "success_rate": 85.43,
+  "avg_latency_ms": 743.89,
+  "error_breakdown": {
+    "connection_refused": 1,
+    "http_400": 21
+  },
+  "batch": "C",
+  "deployed": 25,
+  "healthy": 25,
+  "smoke_test": {
+    "agents_tested": 25,
+    "total_requests": 50,
+    "successes": 50,
+    "failures": 0,
+    "success_rate": 100.0,
+    "per_agent_results": {
+      "consumer_026": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_027": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_028": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_029": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_030": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_031": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_032": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_033": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_034": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_035": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_036": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_037": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_038": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_039": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_040": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_041": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_042": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_043": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_044": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_045": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_046": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_047": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_048": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_049": {
+        "success": 2,
+        "failed": 0
+      },
+      "consumer_050": {
+        "success": 2,
+        "failed": 0
+      }
+    }
+  }
+}

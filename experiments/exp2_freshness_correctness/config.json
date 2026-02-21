@@ -1,0 +1,7 @@
+{
+  "ttl_windows_seconds": [60, 300, 600],
+  "n_trials": 500,
+  "stale_ratio": 0.4,
+  "dishonest_ratio": 0.25,
+  "rng_seed": 42
+}

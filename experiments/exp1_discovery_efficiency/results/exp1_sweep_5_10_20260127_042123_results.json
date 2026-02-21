@@ -1,0 +1,141 @@
+{
+  "run_tag": "exp1_sweep_5_10_20260127_042123",
+  "sweep_ns": [
+    5,
+    10
+  ],
+  "config": {
+    "use_data_facts": true,
+    "ttl_enabled": true,
+    "checksum_enabled": true,
+    "registry_url": "http://localhost:6900",
+    "use_multiple_agents": true,
+    "keywords": [],
+    "dataset_endpoints": [
+      "http://localhost:8000/public-stock-ticker",
+      "http://localhost:8000/public-weather-data",
+      "http://localhost:8000/public-timestamp",
+      "http://localhost:8000/public-uuid",
+      "http://localhost:8000/public-lorem",
+      "http://localhost:8000/public-countries"
+    ],
+    "dataset_endpoint": null,
+    "data_facts_url": null,
+    "target_agent_id": null,
+    "target_dataset_id": null,
+    "rng_seed": 42,
+    "request_timeout_seconds": 10
+  },
+  "summary": [
+    {
+      "mode": "baseline",
+      "n": 5,
+      "steps_per_query": 1,
+      "total_queries": 5,
+      "failed_lookups": 2,
+      "successful_retrievals": 3,
+      "pct_success": 60.0,
+      "mean_time_to_first_data_seconds": 2.5012962666708822,
+      "median_time_to_first_data_seconds": 2.087782000002335,
+      "time_to_first_data_seconds_count": 3
+    },
+    {
+      "mode": "treatment",
+      "n": 5,
+      "steps_per_query": 3,
+      "total_queries": 5,
+      "failed_lookups": 5,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null,
+      "time_to_first_data_seconds_count": 0
+    },
+    {
+      "mode": "baseline",
+      "n": 10,
+      "steps_per_query": 1,
+      "total_queries": 10,
+      "failed_lookups": 3,
+      "successful_retrievals": 7,
+      "pct_success": 70.0,
+      "mean_time_to_first_data_seconds": 4.678666057142046,
+      "median_time_to_first_data_seconds": 2.0597966000059387,
+      "time_to_first_data_seconds_count": 7
+    },
+    {
+      "mode": "treatment",
+      "n": 10,
+      "steps_per_query": 3,
+      "total_queries": 10,
+      "failed_lookups": 10,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null,
+      "time_to_first_data_seconds_count": 0
+    }
+  ],
+  "full_results": [
+    {
+      "mode": "baseline",
+      "n": 5,
+      "steps_per_query": 1,
+      "total_queries": 5,
+      "failed_lookups": 2,
+      "successful_retrievals": 3,
+      "pct_success": 60.0,
+      "time_to_first_data_seconds": [
+        3.3394015000085346,
+        2.0767053000017768,
+        2.087782000002335
+      ],
+      "mean_time_to_first_data_seconds": 2.5012962666708822,
+      "median_time_to_first_data_seconds": 2.087782000002335
+    },
+    {
+      "mode": "treatment",
+      "n": 5,
+      "steps_per_query": 3,
+      "total_queries": 5,
+      "failed_lookups": 5,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "time_to_first_data_seconds": [],
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null
+    },
+    {
+      "mode": "baseline",
+      "n": 10,
+      "steps_per_query": 1,
+      "total_queries": 10,
+      "failed_lookups": 3,
+      "successful_retrievals": 7,
+      "pct_success": 70.0,
+      "time_to_first_data_seconds": [
+        2.0330687999958172,
+        2.0597966000059387,
+        2.0566849000024376,
+        8.217262699996354,
+        8.145720699991216,
+        8.189229900002829,
+        2.0488987999997335
+      ],
+      "mean_time_to_first_data_seconds": 4.678666057142046,
+      "median_time_to_first_data_seconds": 2.0597966000059387
+    },
+    {
+      "mode": "treatment",
+      "n": 10,
+      "steps_per_query": 3,
+      "total_queries": 10,
+      "failed_lookups": 10,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "time_to_first_data_seconds": [],
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null
+    }
+  ]
+}

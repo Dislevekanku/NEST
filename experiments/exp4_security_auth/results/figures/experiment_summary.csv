@@ -1,0 +1,13 @@
+experiment,scenario,trials,success_or_block_rate,unintended_access,data_leaked,mean_latency_ms
+A,A1_valid_credentials,20,100.0,No,No,2372
+A,A2_missing_credentials,20,100.0,No,No,
+A,A3_empty_auth_header,20,100.0,No,No,
+A,A4_bearer_no_token,20,100.0,No,No,
+B,B1_within_ttl,20,100.0,No,No,2411
+B,B2_after_ttl_expiry,20,100.0,No,No,
+B,B3_ttl_boundary,5,100.0,No,No,
+C,C1_token_reuse,20,100.0,No,No,
+C,C2_forged_wrong_secret,20,100.0,No,No,
+C,C3_malformed_garbage,6,100.0,No,No,
+C,C4_altered_claims,20,100.0,No,No,
+C,C5_impersonation,20,100.0,No,No,

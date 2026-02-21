@@ -1,0 +1,68 @@
+{
+  "run_tag": "exp1_N5_20260126_202339",
+  "sweep_ns": null,
+  "config": {
+    "dataset_endpoint": "http://54.172.251.235:8000/public-stock-ticker",
+    "registry_url": "http://registry.chat39.com:6900",
+    "data_facts_url": "http://54.172.251.235:8000/data_facts/public_stock_ticker.json",
+    "target_agent_id": "finance-feed-agent",
+    "target_dataset_id": "public_stock_ticker",
+    "keywords": [
+      "finance",
+      "stock"
+    ],
+    "request_timeout_seconds": 10
+  },
+  "summary": [
+    {
+      "mode": "baseline",
+      "n": 5,
+      "steps_per_query": 1,
+      "total_queries": 5,
+      "failed_lookups": 5,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null,
+      "time_to_first_data_seconds_count": 0
+    },
+    {
+      "mode": "treatment",
+      "n": 5,
+      "steps_per_query": 3,
+      "total_queries": 5,
+      "failed_lookups": 5,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null,
+      "time_to_first_data_seconds_count": 0
+    }
+  ],
+  "full_results": [
+    {
+      "mode": "baseline",
+      "n": 5,
+      "steps_per_query": 1,
+      "total_queries": 5,
+      "failed_lookups": 5,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "time_to_first_data_seconds": [],
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null
+    },
+    {
+      "mode": "treatment",
+      "n": 5,
+      "steps_per_query": 3,
+      "total_queries": 5,
+      "failed_lookups": 5,
+      "successful_retrievals": 0,
+      "pct_success": 0.0,
+      "time_to_first_data_seconds": [],
+      "mean_time_to_first_data_seconds": null,
+      "median_time_to_first_data_seconds": null
+    }
+  ]
+}

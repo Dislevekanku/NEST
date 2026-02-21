@@ -1,0 +1,17 @@
+{
+  "run_tag": "batch_a_20260206_151244",
+  "total_requests": 50,
+  "successes": 20,
+  "failures": 30,
+  "success_rate": 40.0,
+  "avg_latency_ms": 1216.1,
+  "error_breakdown": {
+    "connection_refused": 30
+  },
+  "batch": "A",
+  "deployed": 10,
+  "healthy": 0,
+  "smoke_test": {
+    "error": "No healthy agents to test"
+  }
+}

@@ -1,0 +1,6 @@
+step,component,latency_ms
+1,Registry Lookup,333
+2,A2A Query,33979
+3,Data Facts Fetch,8417
+4,Negotiate JWT,2000
+5,Fetch Dataset,2372

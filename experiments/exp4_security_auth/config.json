@@ -1,0 +1,8 @@
+{
+  "rng_seed": 42,
+  "n_trials_per_scenario": 50,
+  "token_ttl_seconds_owner": 3600,
+  "token_ttl_seconds_inquiry": 60,
+  "simulated_gateway_latency_ms": 2.0,
+  "simulated_db_latency_ms": 1.5
+}

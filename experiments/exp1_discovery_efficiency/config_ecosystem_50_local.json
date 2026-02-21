@@ -1,0 +1,22 @@
+{
+  "use_data_facts": true,
+  "ttl_enabled": true,
+  "checksum_enabled": true,
+  "registry_url": "http://localhost:6900",
+  "use_multiple_agents": true,
+  "keywords": [],
+  "dataset_endpoints": [
+    "http://localhost:8000/public-stock-ticker",
+    "http://localhost:8000/public-weather-data",
+    "http://localhost:8000/public-timestamp",
+    "http://localhost:8000/public-uuid",
+    "http://localhost:8000/public-lorem",
+    "http://localhost:8000/public-countries"
+  ],
+  "dataset_endpoint": null,
+  "data_facts_url": null,
+  "target_agent_id": null,
+  "target_dataset_id": null,
+  "rng_seed": 42,
+  "request_timeout_seconds": 10
+}

@@ -1,0 +1,230 @@
+{
+  "run_tag": "exp4_abc_20260211_211644",
+  "trials": 20,
+  "experiments": {
+    "A": {
+      "experiment": "A",
+      "title": "Authentication & Access Control",
+      "trials": 20,
+      "scenarios": {
+        "A1_valid_credentials": {
+          "successes": 20,
+          "failures": 0,
+          "latencies_ms": [
+            2700.58,
+            2144.99,
+            2133.25,
+            2150.66,
+            2136.16,
+            2135.38,
+            2312.84,
+            2115.14,
+            2141.6,
+            2290.66,
+            2108.69,
+            2150.18,
+            2158.01,
+            2166.79,
+            2153.21,
+            2218.33,
+            2120.38,
+            2144.33,
+            2182.64,
+            2135.65
+          ],
+          "row_counts": [
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
+          "success_rate": 100.0,
+          "mean_latency_ms": 2189.97
+        },
+        "A2_missing_credentials": {
+          "blocked": 20,
+          "leaked": 0,
+          "status_codes": {
+            "401": 20
+          },
+          "block_rate": 100.0,
+          "unintended_access": false
+        },
+        "A3_empty_auth_header": {
+          "blocked": 20,
+          "leaked": 0,
+          "status_codes": {
+            "401": 20
+          },
+          "block_rate": 100.0,
+          "unintended_access": false
+        },
+        "A4_bearer_no_token": {
+          "blocked": 20,
+          "leaked": 0,
+          "status_codes": {
+            "401": 20
+          },
+          "block_rate": 100.0,
+          "unintended_access": false
+        }
+      }
+    },
+    "B": {
+      "experiment": "B",
+      "title": "TTL & Revocation",
+      "trials": 20,
+      "scenarios": {
+        "B1_within_ttl": {
+          "successes": 20,
+          "failures": 0,
+          "latencies_ms": [
+            2725.79,
+            2163.8,
+            2168.99,
+            2160.72,
+            2134.18,
+            2205.09,
+            2132.61,
+            2120.06,
+            2117.1,
+            2108.35,
+            2168.37,
+            2149.92,
+            2158.44,
+            2149.7,
+            2165.18,
+            2177.28,
+            2154.04,
+            2147.07,
+            2209.42,
+            2131.26
+          ],
+          "success_rate": 100.0,
+          "mean_latency_ms": 2182.37
+        },
+        "B2_after_ttl_expiry": {
+          "expired_rejected": 20,
+          "stale_access": 0,
+          "latencies_ms": [
+            2073.84,
+            2074.02,
+            2037.25,
+            2086.95,
+            2072.0,
+            2043.29,
+            2033.26,
+            2035.41,
+            2057.79,
+            2062.97,
+            2069.93,
+            2060.87,
+            2051.82,
+            2073.9,
+            2037.48,
+            2033.03,
+            2042.81,
+            2041.63,
+            2048.89,
+            2049.97
+          ],
+          "rejection_rate": 100.0,
+          "stale_access_detected": false
+        },
+        "B3_ttl_boundary": {
+          "within_boundary_ok": 5,
+          "past_boundary_rejected": 5,
+          "boundary_failures": 0,
+          "ttl_used": 10,
+          "note": "TTL=10s used instead of 3s; short TTLs (<5s) are impractical when server latency (~2s) consumes most of the token lifetime."
+        }
+      }
+    },
+    "C": {
+      "experiment": "C",
+      "title": "Misuse / Malicious Agent",
+      "trials": 20,
+      "scenarios": {
+        "C1_token_reuse": {
+          "requests": 20,
+          "successes": 20,
+          "failures": 0,
+          "note": "Token reuse within TTL is expected to succeed (stateless JWT, no revocation list in v1)"
+        },
+        "C2_forged_wrong_secret": {
+          "blocked": 20,
+          "leaked": 0,
+          "block_rate": 100.0,
+          "data_leaked": false
+        },
+        "C3_malformed_garbage": {
+          "blocked": 6,
+          "leaked": 0,
+          "per_token": [
+            {
+              "token_preview": "not-a-jwt-at-all",
+              "status_code": 401,
+              "latency_ms": 2037.95
+            },
+            {
+              "token_preview": "eyJhbGciOiJIUzI1NiJ9.fake-payload.wrong-",
+              "status_code": 401,
+              "latency_ms": 2048.9
+            },
+            {
+              "token_preview": "",
+              "status_code": 401,
+              "latency_ms": 2027.78
+            },
+            {
+              "token_preview": "Bearer eyJhbGciOiJIUzI1NiJ9",
+              "status_code": 401,
+              "latency_ms": 2054.8
+            },
+            {
+              "token_preview": "null",
+              "status_code": 401,
+              "latency_ms": 2061.52
+            },
+            {
+              "token_preview": "undefined",
+              "status_code": 401,
+              "latency_ms": 2048.13
+            }
+          ],
+          "block_rate": 100.0,
+          "data_leaked": false
+        },
+        "C4_altered_claims": {
+          "blocked": 20,
+          "leaked": 0,
+          "block_rate": 100.0,
+          "data_leaked": false,
+          "note": "Token has valid signature but claims dataset_id=nonexistent_dataset, role=admin, scope=write"
+        },
+        "C5_impersonation": {
+          "requests": 20,
+          "successes": 20,
+          "failures": 0,
+          "note": "v1 JWT is stateless and does not bind to caller IP/identity at request time. Token passed to another agent succeeds within TTL. Mitigation: add audience/fingerprint claims in v2."
+        }
+      }
+    }
+  }
+}

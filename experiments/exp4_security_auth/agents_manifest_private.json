@@ -1,0 +1,83 @@
+{
+  "version": "1.0",
+  "description": "Agent topology for private data experiments (Exp4)",
+  "created": "2026-02-11",
+  "agents": {
+    "data_owner": {
+      "agent_id": "data_owner_private_01",
+      "role": "data_owner",
+      "a2a_port": 6300,
+      "data_port": 6350,
+      "access_type": "semi-private",
+      "dataset_id": "private_employee_records",
+      "script": "agents/data_owner_private.py",
+      "description": "Serves private_employee_records from Supabase. Issues JWTs via /negotiate_access."
+    },
+    "consumers": [
+      {
+        "agent_id": "authorized_consumer_01",
+        "role": "consumer",
+        "port": 6301,
+        "scenario": "authorized",
+        "script": "agents/authorized_consumer.py",
+        "expected_result": "PASS",
+        "description": "Happy path: negotiates JWT, fetches data, verifies checksum."
+      },
+      {
+        "agent_id": "expired_consumer_01",
+        "role": "consumer",
+        "port": 6302,
+        "scenario": "expired",
+        "script": "agents/expired_consumer.py",
+        "expected_result": "PASS",
+        "description": "Negotiates JWT with TTL=2s, waits 3s, expects 401."
+      },
+      {
+        "agent_id": "malicious_consumer_01",
+        "role": "consumer",
+        "port": 6303,
+        "scenario": "malicious",
+        "script": "agents/malicious_consumer.py",
+        "expected_result": "PASS",
+        "description": "Forged JWT (wrong secret) and garbage token, expects 401 for both."
+      },
+      {
+        "agent_id": "unauthorized_consumer_01",
+        "role": "consumer",
+        "port": 6304,
+        "scenario": "unauthorized",
+        "script": "agents/unauthorized_consumer.py",
+        "expected_result": "PASS",
+        "description": "No Authorization header, expects 401."
+      }
+    ]
+  },
+  "supabase": {
+    "project": "nest-private-data",
+    "table": "private_employee_records",
+    "seed_rows": 20,
+    "rng_seed": 42
+  },
+  "pass_fail_conditions": {
+    "auth_success": {
+      "scenario": "authorized",
+      "expected_http": 200,
+      "criteria": "row_count > 0 and checksum matches"
+    },
+    "ttl_expiry": {
+      "scenario": "expired",
+      "expected_http": 401,
+      "criteria": "Response is 401 after token TTL elapses"
+    },
+    "token_forgery": {
+      "scenario": "malicious",
+      "expected_http": 401,
+      "criteria": "All forged/garbage tokens rejected with 401"
+    },
+    "missing_auth": {
+      "scenario": "unauthorized",
+      "expected_http": 401,
+      "criteria": "No-auth and empty-auth both return 401"
+    }
+  }
+}

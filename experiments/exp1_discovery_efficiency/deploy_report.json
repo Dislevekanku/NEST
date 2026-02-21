@@ -1,0 +1,54 @@
+{
+  "deployment_id": "deploy_template",
+  "timestamp": "2026-02-06T00:00:00Z",
+  "mode": "local",
+  "registry_url": "http://registry.chat39.com:6900",
+  "host": "localhost",
+  "agents": {
+    "provider_finance_01": {
+      "status": "pending",
+      "role": "provider",
+      "port": 6000,
+      "url": "http://localhost:6000",
+      "data_facts_url": "http://localhost:8000/data_facts/public_stock_ticker.json",
+      "validation": {
+        "health": {"status": "pending"},
+        "a2a": {"status": "pending"},
+        "data_facts": {"status": "pending"},
+        "registry": {"status": "pending"}
+      },
+      "overall_status": "pending"
+    },
+    "provider_weather_01": {
+      "status": "pending",
+      "role": "provider",
+      "port": 6002,
+      "url": "http://localhost:6002",
+      "data_facts_url": "http://localhost:8002/data_facts/public_weather.json",
+      "validation": {
+        "health": {"status": "pending"},
+        "a2a": {"status": "pending"},
+        "data_facts": {"status": "pending"},
+        "registry": {"status": "pending"}
+      },
+      "overall_status": "pending"
+    },
+    "consumer_001": {"status": "pending", "role": "consumer", "port": 6100, "url": "http://localhost:6100"},
+    "consumer_002": {"status": "pending", "role": "consumer", "port": 6101, "url": "http://localhost:6101"},
+    "consumer_003": {"status": "pending", "role": "consumer", "port": 6102, "url": "http://localhost:6102"},
+    "consumer_004": {"status": "pending", "role": "consumer", "port": 6103, "url": "http://localhost:6103"},
+    "consumer_005": {"status": "pending", "role": "consumer", "port": 6104, "url": "http://localhost:6104"},
+    "consumer_006": {"status": "pending", "role": "consumer", "port": 6105, "url": "http://localhost:6105"},
+    "consumer_007": {"status": "pending", "role": "consumer", "port": 6106, "url": "http://localhost:6106"},
+    "consumer_008": {"status": "pending", "role": "consumer", "port": 6107, "url": "http://localhost:6107"},
+    "consumer_009": {"status": "pending", "role": "consumer", "port": 6108, "url": "http://localhost:6108"},
+    "consumer_010": {"status": "pending", "role": "consumer", "port": 6109, "url": "http://localhost:6109"}
+  },
+  "summary": {
+    "total_requested": 12,
+    "deployed": 0,
+    "validated": 0,
+    "failed": 0
+  },
+  "notes": "Template file - run deploy_agents.py to populate with actual deployment results"
+}

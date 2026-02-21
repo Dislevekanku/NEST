@@ -1,0 +1,18 @@
+{
+  "registry_url": "http://registry.chat39.com:6900",
+  "data_server_port": 8000,
+  "agents": [
+    {
+      "agent_id": "finance-agent",
+      "agent_name": "Finance Data Agent",
+      "dataset_id": "public_stock_ticker",
+      "provider": "stock"
+    },
+    {
+      "agent_id": "weather-agent",
+      "agent_name": "Weather Data Agent",
+      "dataset_id": "public_weather_data",
+      "provider": "weather"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "agent_id": "expired_consumer_01",
+  "scenario": "expired",
+  "steps": [
+    {
+      "step": "negotiate_access",
+      "status": "ok",
+      "latency_ms": 2051.73,
+      "ttl": 2
+    },
+    {
+      "step": "fetch_dataset_expired",
+      "status_code": 401,
+      "latency_ms": 2057.29,
+      "body": {
+        "error": "Access denied"
+      }
+    }
+  ],
+  "overall": "PASS"
+}

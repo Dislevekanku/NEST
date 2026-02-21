@@ -1,0 +1,17 @@
+{
+  "agent_id": "malicious_consumer_01",
+  "scenario": "malicious",
+  "steps": [
+    {
+      "step": "forged_wrong_secret",
+      "status_code": 401,
+      "latency_ms": 2057.04
+    },
+    {
+      "step": "malformed_garbage",
+      "status_code": 401,
+      "latency_ms": 2047.81
+    }
+  ],
+  "overall": "PASS"
+}

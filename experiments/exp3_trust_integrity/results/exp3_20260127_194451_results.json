@@ -1,0 +1,90 @@
+{
+  "run_tag": "exp3_20260127_194451",
+  "config": {
+    "n_trials_per_level": 200,
+    "payload_bytes": 2048,
+    "corruption_percents": [
+      0,
+      1,
+      5,
+      10,
+      25,
+      50
+    ],
+    "rng_seed": 1337
+  },
+  "results": [
+    {
+      "corruption_percent": 0,
+      "n_trials": 200,
+      "payload_bytes": 2048,
+      "corrupted_trials": 0,
+      "detected_with_data_facts": 0,
+      "detected_without_data_facts": 0,
+      "detection_rate_with_data_facts": 0.0,
+      "detection_rate_without_data_facts": 0.0,
+      "silent_failure_rate_with_data_facts": 0.0,
+      "silent_failure_rate_without_data_facts": 0.0
+    },
+    {
+      "corruption_percent": 1,
+      "n_trials": 200,
+      "payload_bytes": 2048,
+      "corrupted_trials": 200,
+      "detected_with_data_facts": 200,
+      "detected_without_data_facts": 0,
+      "detection_rate_with_data_facts": 1.0,
+      "detection_rate_without_data_facts": 0.0,
+      "silent_failure_rate_with_data_facts": 0.0,
+      "silent_failure_rate_without_data_facts": 1.0
+    },
+    {
+      "corruption_percent": 5,
+      "n_trials": 200,
+      "payload_bytes": 2048,
+      "corrupted_trials": 200,
+      "detected_with_data_facts": 200,
+      "detected_without_data_facts": 0,
+      "detection_rate_with_data_facts": 1.0,
+      "detection_rate_without_data_facts": 0.0,
+      "silent_failure_rate_with_data_facts": 0.0,
+      "silent_failure_rate_without_data_facts": 1.0
+    },
+    {
+      "corruption_percent": 10,
+      "n_trials": 200,
+      "payload_bytes": 2048,
+      "corrupted_trials": 200,
+      "detected_with_data_facts": 200,
+      "detected_without_data_facts": 0,
+      "detection_rate_with_data_facts": 1.0,
+      "detection_rate_without_data_facts": 0.0,
+      "silent_failure_rate_with_data_facts": 0.0,
+      "silent_failure_rate_without_data_facts": 1.0
+    },
+    {
+      "corruption_percent": 25,
+      "n_trials": 200,
+      "payload_bytes": 2048,
+      "corrupted_trials": 200,
+      "detected_with_data_facts": 200,
+      "detected_without_data_facts": 0,
+      "detection_rate_with_data_facts": 1.0,
+      "detection_rate_without_data_facts": 0.0,
+      "silent_failure_rate_with_data_facts": 0.0,
+      "silent_failure_rate_without_data_facts": 1.0
+    },
+    {
+      "corruption_percent": 50,
+      "n_trials": 200,
+      "payload_bytes": 2048,
+      "corrupted_trials": 200,
+      "detected_with_data_facts": 200,
+      "detected_without_data_facts": 0,
+      "detection_rate_with_data_facts": 1.0,
+      "detection_rate_without_data_facts": 0.0,
+      "silent_failure_rate_with_data_facts": 0.0,
+      "silent_failure_rate_without_data_facts": 1.0
+    }
+  ]
+}
